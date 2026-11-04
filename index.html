@@ -14,6 +14,7 @@
 <noscript><style>
   .hero{height:auto}
   .hero-stage{position:relative}
+  .mosaic{display:none}
   .pill{opacity:1;transform:translateX(-50%);clip-path:none}
   .pill a{opacity:1}
   .reveal{opacity:1;transform:none}
@@ -42,33 +43,10 @@
 <section class="hero" id="top" aria-label="Apertura e showreel">
   <div class="hero-stage">
 
-    <div class="grid" id="grid" aria-hidden="true">
-      <div class="col" data-col="0">
-        <figure class="tile"><img src="img/cargo-belt.jpg" alt="" style="object-position:50% 40%"></figure>
-        <figure class="tile"><img src="img/presto-fashion-film.jpg" alt=""></figure>
-        <figure class="tile"><img src="img/il-buio.jpg" alt="" style="object-position:50% 35%"></figure>
-      </div>
-      <div class="col" data-col="1">
-        <figure class="tile"><img src="img/hagia-sophia-bosco.jpg" alt=""></figure>
-        <figure class="tile tile-reel" id="reelTile">
-          <div class="reel-stills" id="reelStills">
-            <img src="img/estate-italiana-film.jpg" alt="" class="on">
-            <img src="img/presto-fashion-film.jpg" alt="">
-            <img src="img/giardino-salento.jpg" alt="">
-            <img src="img/cargo-belt.jpg" alt="" style="object-position:50% 45%">
-            <img src="img/hagia-sophia-bosco.jpg" alt="">
-            <img src="img/il-buio.jpg" alt="" style="object-position:50% 35%">
-          </div>
-          <div class="reel-player" id="reelPlayer"></div>
-        </figure>
-        <figure class="tile"><img src="img/look-book-001.jpg" alt="" style="object-position:50% 30%"></figure>
-      </div>
-      <div class="col" data-col="2">
-        <figure class="tile"><img src="img/giardino-salento.jpg" alt=""></figure>
-        <figure class="tile"><img src="img/estate-italiana-shoot.jpg" alt="" style="object-position:50% 30%"></figure>
-        <figure class="tile"><img src="img/bts-002.jpg" alt="" style="object-position:50% 40%"></figure>
-      </div>
-    </div>
+    <canvas class="mosaic" id="mosaic" aria-hidden="true"></canvas>
+    <noscript><img class="mosaic-nojs" src="img/estate-italiana-shoot.jpg" alt=""></noscript>
+    <!-- quando Vimeo sarà incorporabile, il player dello showreel va qui sopra la tessera centrale -->
+    <div class="reel-player" id="reelPlayer" aria-hidden="true"></div>
 
     <div class="hero-shade" aria-hidden="true"></div>
 
@@ -83,7 +61,7 @@
       </div>
     </div>
 
-    <!-- bande cinema: compaiono quando il reel è a tutto schermo -->
+    <!-- velature da cinema sopra il reel a tutto schermo: sfumano, niente nero pieno -->
     <div class="band band-t" aria-hidden="true">
       <span>MKA · SHOWREEL</span>
       <span class="tc" id="tc">00:00:00:00</span>

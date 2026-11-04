@@ -2,6 +2,7 @@
 // e muove l'apertura: niente scroll-jacking, tutto reversibile.
 import { PROJECTS, MEMBERS } from "./data.js";
 import { VIMEO, mountBackground, mountFull } from "./vimeo.js";
+import { createMosaic } from "./mosaic.js";
 
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
@@ -77,34 +78,56 @@ $$(".polaroid").forEach((el) => {
 
 /* ═══ apertura ═══ */
 const hero = $(".hero");
-const gridEl = $("#grid");
 const stage = $(".hero-stage");
 const front = $("#heroFront");
 const reelUi = $("#reelUi");
+const reelPlayer = $("#reelPlayer");
 const pill = $("#pill");
-let bandH = 0;
 
-function measure() {
-  const vw = innerWidth, vh = innerHeight;
-  bandH = clamp((vh - vw / 2.39) / 2, 44, vh * 0.11);
-  stage.style.setProperty("--bh", `${bandH}px`);
-}
+// tessere del mosaico e fermi immagine dello showreel (pos = punto di fuoco x, y)
+const mosaic = createMosaic($("#mosaic"), {
+  reduced,
+  tiles: [
+    { src: img("cargo-belt"), pos: [0.5, 0.4] },
+    { src: img("presto-fashion-film") },
+    { src: img("il-buio"), pos: [0.5, 0.35] },
+    { src: img("hagia-sophia-bosco") },
+    { src: img("look-book-001"), pos: [0.5, 0.3] },
+    { src: img("giardino-salento") },
+    { src: img("estate-italiana-shoot"), pos: [0.5, 0.3] },
+    { src: img("bts-002"), pos: [0.5, 0.4] },
+    { src: img("estate-italiana-film") },
+    { src: img("backstage-001"), pos: [0.5, 0.45] },
+  ],
+  stills: [
+    { src: img("estate-italiana-film") },
+    { src: img("presto-fashion-film") },
+    { src: img("giardino-salento") },
+    { src: img("cargo-belt"), pos: [0.5, 0.45] },
+    { src: img("hagia-sophia-bosco") },
+    { src: img("il-buio"), pos: [0.5, 0.35] },
+  ],
+});
 
-let ticking = false;
 let navOn = false;
 let heroP = 0;
-function frame() {
-  ticking = false;
-  const pin = hero.offsetHeight - innerHeight;
+let heroVisible = true;
+new IntersectionObserver(([e]) => { heroVisible = e.isIntersecting; }).observe(hero);
+
+function update() {
+  // il tratto bloccato si misura sullo stage e non su innerHeight: sui telefoni
+  // innerHeight cambia con la barra degli indirizzi e farebbe saltare l'animazione
+  const pin = hero.offsetHeight - stage.offsetHeight;
   const p = clamp(-hero.getBoundingClientRect().top / pin);
   heroP = p;
 
-  // 0 → 0,45 del tratto bloccato (circa 450px su uno schermo da 800, come recordstudio): la griglia si raddrizza e la tessera centrale riempie lo schermo
+  // 0 → 0,45 del tratto (circa 450px su uno schermo da 800, come recordstudio):
+  // la griglia si raddrizza e la tessera centrale diventa lo schermo
   const z = easeOut(clamp(p / 0.45));
-  gridEl.style.setProperty("--s", (0.4 + 0.6 * z).toFixed(4));
-  gridEl.style.setProperty("--r", `${(-30 * (1 - z)).toFixed(3)}deg`);
-  gridEl.style.setProperty("--k", (1 - z).toFixed(4));
-  gridEl.style.setProperty("--rad", `${(28 * (1 - z)).toFixed(2)}px`);
+  const s = mosaic.S0 + (1 - mosaic.S0) * z;
+  const r = mosaic.R0 * (1 - z);
+  mosaic.set({ s, r, k: 1 - z, rad: mosaic.RAD0 * (1 - z) });
+  reelPlayer.style.transform = `translate(-50%, -50%) rotate(${r}rad) scale(${s})`;
 
   // logo e invito spariscono nel primo tratto
   const f = clamp(p / 0.2);
@@ -113,9 +136,8 @@ function frame() {
   front.style.visibility = f >= 1 ? "hidden" : "visible";
   stage.style.setProperty("--shade", (1 - z).toFixed(3));
 
-  // bande cinema quando il reel è a tutto schermo
-  const bk = clamp((p - 0.4) / 0.14);
-  stage.style.setProperty("--bk", bk.toFixed(3));
+  // velature da cinema e comandi del reel a tutto schermo
+  stage.style.setProperty("--bk", clamp((p - 0.4) / 0.14).toFixed(3));
   reelUi.classList.toggle("on", p > 0.48 && p < 0.999);
 
   // la pillola si apre solo da qui in poi, e si richiude risalendo
@@ -127,30 +149,26 @@ function frame() {
     if (on) requestAnimationFrame(() => moveInd(lit || active));
   }
 }
-function request() { if (!ticking) { ticking = true; requestAnimationFrame(frame); } }
-addEventListener("scroll", request, { passive: true });
-addEventListener("resize", () => { measure(); request(); moveInd(active); });
-measure();
-frame();
 
-/* ─── showreel: fermi immagine finché Vimeo non è incorporabile ─── */
-const stills = $$("#reelStills img");
-let si = 0, heroVisible = true;
-new IntersectionObserver(([e]) => { heroVisible = e.isIntersecting; }).observe(hero);
-setInterval(() => {
-  if (!heroVisible || document.hidden) return;
-  stills[si].classList.remove("on");
-  si = (si + 1) % stills.length;
-  // riavvia il Ken Burns sull'immagine che entra
-  void stills[si].offsetWidth;
-  stills[si].classList.add("on");
-}, reduced ? 5000 : 3200);
+// un solo ciclo: legge lo scroll e ridisegna il canvas, solo finché l'apertura si vede
+function loop(now) {
+  if (heroVisible && !document.hidden) {
+    mosaic.resize();
+    update();
+    mosaic.draw(now);
+  }
+  requestAnimationFrame(loop);
+}
+// fuori dall'apertura il ciclo non disegna: serve comunque aggiornare la pillola
+addEventListener("scroll", () => { if (!heroVisible) update(); }, { passive: true });
+addEventListener("resize", () => moveInd(active));
+requestAnimationFrame(loop);
 
-mountBackground($("#reelPlayer"), VIMEO.showreel).then((ok) => {
+mountBackground(reelPlayer, VIMEO.showreel).then((ok) => {
   if (ok) $("#reelNote").textContent = "Showreel 2026";
 });
 
-// timecode a 25 fotogrammi, gira solo quando le bande si vedono
+// timecode a 25 fotogrammi, gira solo quando le velature si vedono
 const tc = $("#tc");
 const t0 = performance.now();
 setInterval(() => {
@@ -178,7 +196,11 @@ let active = links[0];
 let lit = null;
 
 function moveInd(a) {
-  if (!a || !a.offsetWidth) { ind.style.opacity = 0; return; }
+  if (!a || !a.offsetWidth) {
+    ind.style.opacity = 0;
+    links.forEach((l) => l.classList.remove("is-lit"));
+    return;
+  }
   ind.style.opacity = 1;
   ind.style.left = `${a.offsetLeft}px`;
   ind.style.width = `${a.offsetWidth}px`;

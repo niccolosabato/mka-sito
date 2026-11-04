@@ -19,8 +19,8 @@ moduli JavaScript non partono aprendo il file direttamente.
    prenotare una call.
 2. **Showreel.** Scorrendo, il mosaico si raddrizza e si ingrandisce finché il
    riquadro centrale diventa lo schermo intero: lo showreel è quel riquadro.
-   Arrivati a tutto schermo entrano due bande nere da cinema (2,39:1) con il
-   timecode, e dal basso si apre la **pillola di navigazione**, che da lì resta
+   Arrivati a tutto schermo compaiono due velature sfumate con il timecode, e
+   dal basso si apre la **pillola di navigazione**, che da lì resta
    sempre visibile. Risalendo tutto torna com'era.
 3. **Progetti.** Sei lavori su due colonne e tre righe. All'hover l'anteprima
    scorre i fermi immagine del lavoro e compare l'etichetta "Guarda". In fondo
@@ -45,8 +45,12 @@ sfalsate in verticale (-38%, -4%, +25% dell'altezza). La sezione resta ferma
 per circa 740px di scroll e in circa 450px la griglia torna a scala 1 e
 rotazione 0, con un'accelerazione che rallenta verso la fine (a metà corsa è
 già al 75%). Qui i valori sono gli stessi. Loro usano GSAP con ScrollTrigger,
-qui basta un `requestAnimationFrame` che legge lo scroll nativo e scrive tre
-variabili CSS (`--s`, `--r`, `--k`).
+qui il mosaico è disegnato su un `<canvas>` grande quanto lo schermo
+(`js/mosaic.js`), con un solo `requestAnimationFrame` che legge lo scroll
+nativo. Il canvas serve per i telefoni: una griglia di elementi HTML grande
+nove schermi li mandava in crisi, e a metà scroll il mosaico spariva nel nero.
+Il numero di colonne e righe si calcola dalla forma dello schermo, così il
+mosaico ruotato copre sempre tutto, anche su un telefono in verticale.
 
 **unscene.work.** Pillola fissa in basso al centro a 35px dal fondo, alta
 42px, fondo `rgba(18,18,18,.5)` con sfocatura di 10px, voci da 34px con
@@ -86,7 +90,8 @@ crema per i tag `<img>`.
 index.html        apertura e showreel · progetti · collettivo · call · piede · pillola
 progetti.html     archivio di tutti i lavori, con anteprima al cursore
 css/style.css     tutti gli stili, token in :root
-js/main.js        apertura · showreel · pillola · card · polaroid · form
+js/main.js        scroll dell'apertura · pillola · card · polaroid · form
+js/mosaic.js      il mosaico su canvas e i fermi immagine dello showreel
 js/data.js        progetti e membri: si cambia il contenuto solo qui
 js/vimeo.js       ID dei video e player Vimeo, con ripiego
 img/              copertine dei post Instagram di @mka.collective
@@ -112,7 +117,8 @@ Quando ci sarà il reel vero:
    `background: true` se il piano lo permette).
 
 Il codice aspetta il player per 5 secondi: se non si avvia, torna ai fermi
-immagine da solo.
+immagine da solo. Il player si posa sopra la tessera centrale del canvas
+(`#reelPlayer`), che `main.js` ruota e scala insieme al mosaico.
 
 ## Cosa è reale e cosa manca
 
@@ -142,11 +148,14 @@ direttamente.
 
 ## Accessibilità e casi limite
 
-- `prefers-reduced-motion`: niente grana animata, niente zoom lento sulle
-  foto, ingressi senza animazione. L'apertura resta legata allo scroll, che
+- `prefers-reduced-motion`: niente grana animata, tessere del mosaico ferme,
+  ingressi senza animazione. L'apertura resta legata allo scroll, che
   muove chi legge.
-- Senza JavaScript la pagina si legge lo stesso: l'apertura si vede ferma e
-  la pillola è già al suo posto.
+- Senza JavaScript la pagina si legge lo stesso: al posto del mosaico c'è una
+  foto ferma e la pillola è già al suo posto.
+- Sui telefoni l'apertura usa l'altezza dello schermo con la barra degli
+  indirizzi nascosta, così quando la barra sparisce sotto il reel non resta
+  una fascia vuota.
 - Su telefono la pillola perde la voce "Showreel" per starci in larghezza.
   Provato fino a 570px di finestra (il minimo che Chrome desktop consente);
   sotto i 380px le voci si stringono ancora.

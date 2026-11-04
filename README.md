@@ -1,0 +1,152 @@
+# MKA, prototipo del sito
+
+Prototipo del sito di **MKA (Matrioska Creativa)**, collettivo di multimedia
+production. Segue il brief di `../info.md` e usa il branding ufficiale di
+`../branding.pdf`. Pagina singola più una pagina archivio, HTML/CSS/JS puri,
+nessun build step.
+
+```sh
+python3 -m http.server 8000
+```
+
+poi `http://localhost:8000`. Va servito da un server (anche locale) perché i
+moduli JavaScript non partono aprendo il file direttamente.
+
+## Com'è fatta la pagina
+
+1. **Apertura.** Un mosaico di riquadri inclinato a -30° e ridotto al 40%, con
+   il logo "moneta con acronimo esteso" al centro e sotto il bottone per
+   prenotare una call.
+2. **Showreel.** Scorrendo, il mosaico si raddrizza e si ingrandisce finché il
+   riquadro centrale diventa lo schermo intero: lo showreel è quel riquadro.
+   Arrivati a tutto schermo entrano due bande nere da cinema (2,39:1) con il
+   timecode, e dal basso si apre la **pillola di navigazione**, che da lì resta
+   sempre visibile. Risalendo tutto torna com'era.
+3. **Progetti.** Sei lavori su due colonne e tre righe. All'hover l'anteprima
+   scorre i fermi immagine del lavoro e compare l'etichetta "Guarda". In fondo
+   il link a `progetti.html` con l'elenco completo.
+4. **Il collettivo.** I membri sono polaroid sparse su un tavolo color crema:
+   si raddrizzano al passaggio del mouse e si possono trascinare. Su telefono
+   diventano una griglia a due colonne.
+5. **Prenota una call.** Form classico su fondo rosso: nome, email, azienda,
+   giorno preferito, tipo di lavoro e budget a scelta rapida, messaggio.
+
+L'invito alla call è sempre presente: nell'apertura, in alto a destra in ogni
+momento (diventa nero sopra la sezione rossa) e come ultima voce della pillola.
+
+## Da dove vengono le due animazioni
+
+Tutte e due sono rifatte sulle misure prese dal vivo sui siti indicati nel
+brief.
+
+**recordstudio.it.** La loro apertura è una griglia di 3 colonne per 3 video,
+ognuno grande quanto lo schermo, con `scale(0.4) rotate(-30deg)` e le colonne
+sfalsate in verticale (-38%, -4%, +25% dell'altezza). La sezione resta ferma
+per circa 740px di scroll e in circa 450px la griglia torna a scala 1 e
+rotazione 0, con un'accelerazione che rallenta verso la fine (a metà corsa è
+già al 75%). Qui i valori sono gli stessi. Loro usano GSAP con ScrollTrigger,
+qui basta un `requestAnimationFrame` che legge lo scroll nativo e scrive tre
+variabili CSS (`--s`, `--r`, `--k`).
+
+**unscene.work.** Pillola fissa in basso al centro a 35px dal fondo, alta
+42px, fondo `rgba(18,18,18,.5)` con sfocatura di 10px, voci da 34px con
+padding 8x12px in Inter Display 14px. La voce attiva ha una capsula chiara
+`#fafafa` con il testo scuro, e la stessa capsula scivola sotto la voce su cui
+passa il mouse. Le misure sono quelle. In più qui la pillola entra
+allargandosi dal centro e ha in coda la voce "Prenota call" in rosso.
+
+## Branding
+
+| Token | Colore | Uso |
+|---|---|---|
+| `--red` | `#A93F33` | invito alla call, sezione contatti |
+| `--slate` | `#748C8E` | etichette dei progetti |
+| `--blue` | `#229CD2` | etichette dei progetti |
+| `--yellow` | `#F0E630` | etichette, selezione del testo, focus, errori del form |
+| `--cream` | `#F1EDE4` | testo su nero, sezione del collettivo |
+| `--black` / `--white` | | fondo, polaroid |
+
+**Font.** Datatype è su Google Fonts ed è quello originale (qui un po'
+stretto, `font-stretch: 80%`, come nel campionario). Neue Haas Grotesk Display
+è commerciale e non si può ricavare dal PDF: lì dentro ci sono solo le lettere
+del campionario, senza accenti né punteggiatura, e la licenza della versione
+incorporata non copre il web. Al suo posto c'è Inter con l'asse ottico a 32
+(cioè Inter Display, lo stesso che usa unscene). In `css/style.css` c'è già il
+`@font-face` per i file veri: con la licenza web basta mettere
+`NHaasGroteskDSPro-55Rg.woff2` e `NHaasGroteskDSPro-65Md.woff2` in `fonts/`.
+
+**Loghi.** Estratti dal PDF in vettoriale con `pdftocairo -svg` (pagina 2 per
+il logo esteso, pagina 5 per la moneta), ripuliti e ritagliati. In `logo/` ci
+sono due versioni: quella con `currentColor` da usare inline e quella color
+crema per i tag `<img>`.
+
+## Struttura
+
+```
+index.html        apertura e showreel · progetti · collettivo · call · piede · pillola
+progetti.html     archivio di tutti i lavori, con anteprima al cursore
+css/style.css     tutti gli stili, token in :root
+js/main.js        apertura · showreel · pillola · card · polaroid · form
+js/data.js        progetti e membri: si cambia il contenuto solo qui
+js/vimeo.js       ID dei video e player Vimeo, con ripiego
+img/              copertine dei post Instagram di @mka.collective
+logo/             loghi SVG estratti da branding.pdf
+fonts/            vuota, per Neue Haas quando ci sarà la licenza
+```
+
+## Vimeo
+
+Il player Vimeo risponde ancora **401** da qualunque sito: l'account MKA è
+free e ha l'incorporamento disattivato (verificato a novembre 2026). Il video
+in bio, `1179573849`, è BACKSTAGE_001 e non uno showreel.
+
+Per questo in `js/vimeo.js` lo showreel ha `embeddable: false`. Nel riquadro
+centrale girano i fermi immagine dei lavori a dissolvenza, e "Guarda lo
+showreel" apre una finestra che spiega il problema e manda alla pagina Vimeo.
+Quando ci sarà il reel vero:
+
+1. abilitare l'incorporamento sul dominio del sito (impostazioni privacy del
+   video su Vimeo). Per il video muto in loop nel riquadro (modalità
+   `background`) serve un piano a pagamento;
+2. mettere l'ID in `VIMEO.showreel.id` e `embeddable: true` (più
+   `background: true` se il piano lo permette).
+
+Il codice aspetta il player per 5 secondi: se non si avvia, torna ai fermi
+immagine da solo.
+
+## Cosa è reale e cosa manca
+
+**Reale.** Il logo, i colori e Datatype dal branding. Le immagini, scaricate
+dai 13 post Instagram di `@mka.collective` e ridotte a 1600px al massimo. I
+titoli e i clienti dei progetti (Estate Italiana per Reviva, Presto Fashion
+Film, Cargo & Belt e Look Book 001 per Presto), presi dalle didascalie. I due
+testi del collettivo, presi dai post "manifesto" e "what MKA do". I link a
+Instagram e Vimeo.
+
+Provvisorio o inventato, quindi da far confermare:
+- i titoli "Il giardino", "Il buio" e "Una visione nata a Istanbul": quei post
+  non avevano un titolo, sono ricavati dalla didascalia;
+- le etichette di tipo (Fashion film, Shooting, Corto…) e "Racconto dal
+  Salento";
+- **tutti i membri**: nomi ("Nome Cognome"), ruoli e foto. Le foto delle
+  polaroid sono fotogrammi presi dai lavori;
+- `info@matrioskacreativa.it` è un **indirizzo inventato**;
+- il testo sotto "Prenota una call" e le fasce di budget;
+- i link delle card portano ai post Instagram, in attesa delle pagine dei
+  progetti.
+
+Il form per ora non invia niente: controlla i campi obbligatori e mostra una
+conferma. Per il sito vero: Netlify Forms (come in `kyure_website`) o
+Formspree, oppure un collegamento a Calendly o Cal.com per fissare la call
+direttamente.
+
+## Accessibilità e casi limite
+
+- `prefers-reduced-motion`: niente grana animata, niente zoom lento sulle
+  foto, ingressi senza animazione. L'apertura resta legata allo scroll, che
+  muove chi legge.
+- Senza JavaScript la pagina si legge lo stesso: l'apertura si vede ferma e
+  la pillola è già al suo posto.
+- Su telefono la pillola perde la voce "Showreel" per starci in larghezza.
+  Provato fino a 570px di finestra (il minimo che Chrome desktop consente);
+  sotto i 380px le voci si stringono ancora.

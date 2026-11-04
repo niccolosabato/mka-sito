@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Progetti · MKA Matrioska Creativa</title>
+<meta name="description" content="Tutti i lavori di MKA, Matrioska Creativa.">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="logo/moneta-crema.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Datatype:wdth,wght@75..100,100..900&family=Inter:opsz,wght@14..32,400..600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .index { padding: 20vh var(--pad) 18vh; }
+  .rows { list-style: none; margin: 0; padding: 0; border-top: 1px solid rgba(241,237,228,.2); }
+  .rows a {
+    display: grid; grid-template-columns: 60px 1.4fr 1fr 1fr 40px; align-items: center; gap: 16px;
+    padding: 22px 0; border-bottom: 1px solid rgba(241,237,228,.2); text-decoration: none;
+    transition: padding .45s var(--ease), background-color .3s;
+  }
+  .rows a:hover { padding-left: 14px; padding-right: 14px; background: rgba(241,237,228,.04); }
+  .rows .t { font-size: clamp(22px, 3vw, 44px); font-weight: 500; letter-spacing: -.03em; line-height: 1.05; }
+  .rows .m { font-family: var(--f-mono); font-stretch: 80%; font-size: 14px; text-transform: uppercase; letter-spacing: .04em; opacity: .7; }
+  .rows .ar { justify-self: end; opacity: .6; }
+  .peek {
+    position: fixed; left: 0; top: 0; z-index: 40; width: 300px; aspect-ratio: 4 / 3; border-radius: 12px; overflow: hidden;
+    pointer-events: none; opacity: 0; transform: translate(-50%, -50%) scale(.9); transition: opacity .3s, transform .45s var(--ease);
+  }
+  .peek.on { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  .peek img { width: 100%; height: 100%; object-fit: cover; }
+  @media (max-width: 760px) {
+    .rows a { grid-template-columns: 36px 1fr 24px; }
+    .rows .m { grid-column: 2; }
+    .rows .ar { grid-row: 1; grid-column: 3; }
+    .peek { display: none; }
+  }
+</style>
+</head>
+<body class="nav-on">
+<div class="grain" aria-hidden="true"></div>
+<header class="top">
+  <a class="brand" href="index.html" aria-label="MKA, torna alla home">
+    <img src="logo/moneta-crema.svg" alt="" width="34" height="34">
+    <span class="brand-txt">MKA<span class="brand-sub">Matrioska Creativa</span></span>
+  </a>
+  <a class="cta-top" href="index.html#call">Prenota una call</a>
+</header>
+
+<main class="index">
+  <p class="label">Archivio</p>
+  <h1 class="sec-title" style="margin-bottom:clamp(40px,7vw,96px)">Tutti i progetti</h1>
+  <ul class="rows" id="rows"></ul>
+</main>
+
+<div class="peek" id="peek" aria-hidden="true"><img alt="" id="peekImg"></div>
+
+<nav class="pill on" aria-label="Navigazione">
+  <span class="pill-ind" aria-hidden="true" style="opacity:0"></span>
+  <a href="index.html#top" class="pl-reel">Showreel</a>
+  <a href="index.html#progetti" class="is-lit" style="background:#fafafa">Progetti</a>
+  <a href="index.html#collettivo">Collettivo</a>
+  <a href="index.html#call">Contatti</a>
+  <i class="pill-sep" aria-hidden="true"></i>
+  <a href="index.html#call" class="pill-call">Prenota call</a>
+</nav>
+
+<script type="module">
+  import { PROJECTS } from "./js/data.js";
+  const rows = document.getElementById("rows");
+  rows.innerHTML = PROJECTS.map((p, i) => `
+    <li><a href="${p.url}" target="_blank" rel="noopener" data-img="img/${p.imgs[0]}.jpg">
+      <span class="m">${String(i + 1).padStart(2, "0")}</span>
+      <span class="t">${p.title}</span>
+      <span class="m">${p.client}</span>
+      <span class="m">${p.tag}</span>
+      <span class="ar" aria-hidden="true">&#8599;</span>
+    </a></li>`).join("");
+  const peek = document.getElementById("peek"), pimg = document.getElementById("peekImg");
+  rows.querySelectorAll("a").forEach((a) => {
+    a.addEventListener("pointerenter", () => { pimg.src = a.dataset.img; peek.classList.add("on"); });
+    a.addEventListener("pointerleave", () => peek.classList.remove("on"));
+    a.addEventListener("pointermove", (e) => { peek.style.left = e.clientX + 180 + "px"; peek.style.top = e.clientY + "px"; });
+  });
+</script>
+</body>
+</html>

@@ -1,19 +1,7 @@
 /* MKA · Matrioska Creativa, prototipo.
-   Colori e font da branding.pdf. Neue Haas Grotesk Display non ha licenza web:
-   al suo posto Inter con l'asse ottico fermo a 32 (Inter Display). Quando ci
-   saranno i file con licenza, basta metterli in fonts/ e il @font-face sotto
-   li prende per primi. */
-
-@font-face {
-  font-family: "NHaas Display";
-  src: url("../fonts/NHaasGroteskDSPro-55Rg.woff2") format("woff2");
-  font-weight: 400; font-display: swap;
-}
-@font-face {
-  font-family: "NHaas Display";
-  src: url("../fonts/NHaasGroteskDSPro-65Md.woff2") format("woff2");
-  font-weight: 500; font-display: swap;
-}
+   Colori e font da branding.pdf, aggiornato: il font primario ufficiale è
+   Radio Canada Big (Google Fonts), regular 400 per i testi e medium 500 per i
+   titoli. Il secondario resta Datatype. */
 
 :root {
   --red: #A93F33;
@@ -25,7 +13,7 @@
   --black: #000000;
   --ink: #121212;
 
-  --f-sans: "NHaas Display", "Inter", system-ui, sans-serif;
+  --f-sans: "Radio Canada Big", system-ui, sans-serif;
   --f-mono: "Datatype", ui-monospace, monospace;
 
   --pad: clamp(16px, 2.2vw, 32px);
@@ -49,7 +37,7 @@ body {
   background: var(--black);
   color: var(--cream);
   font-family: var(--f-sans);
-  font-variation-settings: "opsz" 32;
+  font-weight: 400;
   font-size: 16px;
   line-height: 1.45;
   -webkit-font-smoothing: antialiased;
@@ -88,7 +76,7 @@ button { font: inherit; color: inherit; }
 .btn {
   display: inline-flex; align-items: center; gap: .4em;
   height: 46px; padding: 0 22px; border: 0; border-radius: 99px;
-  font-size: 15px; font-weight: 500; text-decoration: none; cursor: pointer;
+  font-size: 15px; text-decoration: none; cursor: pointer;
   transition: transform .4s var(--ease), background-color .3s, color .3s;
 }
 .btn:hover { transform: translateY(-2px); }
@@ -114,7 +102,7 @@ button { font: inherit; color: inherit; }
 }
 .brand img { width: 34px; height: 34px; }
 .brand-txt { font-family: var(--f-mono); font-stretch: 80%; font-size: 15px; letter-spacing: .04em; line-height: 1.05; display: flex; flex-direction: column; }
-.brand-sub { font-size: 11px; opacity: .7; text-transform: uppercase; }
+.brand-sub { font-size: 11px; text-transform: uppercase; }
 .cta-top {
   height: 34px; display: inline-flex; align-items: center; padding: 0 14px;
   border-radius: 99px; background: var(--red); color: var(--cream);
@@ -132,7 +120,7 @@ body.on-call .cta-top:hover { background: var(--ink); }
 }
 .corner-l { left: var(--pad); }
 .corner-r { right: var(--pad); }
-body.nav-on .corner { opacity: .75; }
+body.nav-on .corner { opacity: 1; }
 @media (max-width: 900px) { .corner { display: none; } }
 
 /* ═══ APERTURA ═══ */
@@ -169,14 +157,28 @@ body.nav-on .corner { opacity: .75; }
   pointer-events: none;
 }
 .hero-front a { pointer-events: auto; }
-.hero-logo { margin: 0; width: min(78vw, 980px); }
-.hero-logo img { width: 100%; height: auto; filter: drop-shadow(0 6px 30px rgba(0,0,0,.35)); }
-.hero-line { margin: 22px 0 0; font-size: clamp(15px, 1.4vw, 19px); opacity: .85; }
+.hero-logo { position: relative; margin: 0; width: min(78vw, 980px); }
+.hero-logo img { filter: drop-shadow(0 6px 30px rgba(0,0,0,.35)); }
+.hero-letters { width: 100%; height: auto; }
+/* la moneta è il pittogramma intero di branding.pdf (logo/moneta-crema.svg):
+   nel logo la R la copre in parte, qui resta intera. Posata nella O con scala
+   0,45685 e spostamento 614,27/216,38 rispetto al viewBox delle lettere
+   (460,370 1010x346), ricavati da M, K, A e matrioska dei due disegni */
+.hero-coin {
+  position: absolute; left: 50.103%; top: 1.813%; width: 17.912%; height: auto;
+  transform-origin: 50% 50%;
+}
+
+/* ─── intro: la moneta cade, si posa e va al suo posto nel logo (js/intro.js) ───
+   Con .intro sull'html tutto il resto è nascosto, il fondo resta nero. */
+.intro .mosaic, .intro .hero-shade, .intro .top, .intro .hero-line,
+.intro .hero-bottom, .intro .hero-letters, .intro .hero-coin { opacity: 0; }
+.hero-line { margin: 22px 0 0; font-size: clamp(15px, 1.4vw, 19px); }
 .hero-bottom {
   position: absolute; left: 0; right: 0; bottom: calc(var(--ui, 0px) + max(32px, env(safe-area-inset-bottom)));
   display: flex; flex-direction: column; align-items: center; gap: 14px;
 }
-.hint { opacity: .7; }
+.hint { }
 .hint::after { content: ""; display: block; width: 1px; height: 26px; margin: 8px auto 0; background: currentColor; transform-origin: top; animation: tick 1.8s var(--ease) infinite; }
 @keyframes tick { 0% { transform: scaleY(0); } 50% { transform: scaleY(1); } 100% { transform: scaleY(1); opacity: 0; } }
 
@@ -199,7 +201,7 @@ body.nav-on .corner { opacity: .75; }
   pointer-events: none;
 }
 .reel-ui.on { opacity: 1; transform: none; pointer-events: auto; }
-.reel-note { margin: 0; opacity: .75; }
+.reel-note { margin: 0; }
 
 
 /* ═══ PILLOLA (misure di unscene.work) ═══ */
@@ -245,7 +247,7 @@ body.nav-on .corner { opacity: .75; }
   font-size: clamp(64px, 12.5vw, 210px);
   line-height: .86; letter-spacing: -.055em;
 }
-.label { margin: 0 0 18px; opacity: .7; }
+.label { margin: 0 0 18px; }
 
 .reveal { opacity: 0; transform: translateY(26px); transition: opacity .9s var(--ease), transform .9s var(--ease); }
 .reveal.in { opacity: 1; transform: none; }
@@ -294,9 +296,9 @@ body.nav-on .corner { opacity: .75; }
   display: grid; grid-template-columns: auto 1fr auto; gap: 4px 16px; align-items: baseline;
   padding-top: 16px;
 }
-.card-n { font-family: var(--f-mono); font-stretch: 80%; font-size: 13px; opacity: .55; }
+.card-n { font-family: var(--f-mono); font-stretch: 80%; font-size: 13px; }
 .card-title { margin: 0; font-size: clamp(22px, 2.2vw, 32px); font-weight: 500; letter-spacing: -.02em; line-height: 1.1; }
-.card-client { grid-column: 2; font-family: var(--f-mono); font-stretch: 80%; font-size: 14px; text-transform: uppercase; letter-spacing: .04em; opacity: .7; }
+.card-client { grid-column: 2; font-family: var(--f-mono); font-stretch: 80%; font-size: 14px; text-transform: uppercase; letter-spacing: .04em; }
 .card-tag {
   grid-column: 3; grid-row: 1; justify-self: end;
   font-family: var(--f-mono); font-stretch: 80%; font-size: 12px; text-transform: uppercase; letter-spacing: .04em;
@@ -322,7 +324,7 @@ body.nav-on .corner { opacity: .75; }
 }
 .crew-text { align-self: start; position: sticky; top: 110px; }
 .crew-lead { margin: 34px 0 0; font-size: clamp(22px, 2.3vw, 34px); line-height: 1.15; letter-spacing: -.02em; font-weight: 500; max-width: 18em; }
-.crew-body { margin: 18px 0 0; font-size: 17px; max-width: 30em; opacity: .8; }
+.crew-body { margin: 18px 0 0; font-size: 17px; max-width: 30em; }
 .skills { list-style: none; padding: 0; margin: 30px 0 0; display: flex; flex-wrap: wrap; gap: 8px; max-width: 34em; }
 .skills li {
   font-family: var(--f-mono); font-stretch: 80%; text-transform: uppercase; letter-spacing: .04em; font-size: 13px;
@@ -345,7 +347,7 @@ body.nav-on .corner { opacity: .75; }
 .polaroid img { width: 100%; aspect-ratio: 1; object-fit: cover; filter: grayscale(.25) contrast(1.05) sepia(.08); pointer-events: none; }
 .polaroid figcaption { padding: 12px 2px 16px; line-height: 1.2; }
 .polaroid b { display: block; font-weight: 500; font-size: 17px; letter-spacing: -.01em; }
-.polaroid span { display: block; margin-top: 4px; font-family: var(--f-mono); font-stretch: 80%; text-transform: uppercase; letter-spacing: .04em; font-size: 12px; opacity: .65; }
+.polaroid span { display: block; margin-top: 4px; font-family: var(--f-mono); font-stretch: 80%; text-transform: uppercase; letter-spacing: .04em; font-size: 12px; }
 
 /* ─── prenota una call ─── */
 .call {
@@ -363,7 +365,7 @@ body.nav-on .corner { opacity: .75; }
 .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
 .field { display: grid; gap: 6px; }
 .field > span, .chips legend {
-  font-family: var(--f-mono); font-stretch: 80%; text-transform: uppercase; letter-spacing: .04em; font-size: 13px; opacity: .85;
+  font-family: var(--f-mono); font-stretch: 80%; text-transform: uppercase; letter-spacing: .04em; font-size: 13px;
 }
 .field input, .field textarea {
   width: 100%; padding: 10px 0; border: 0; border-bottom: 1px solid rgba(241,237,228,.45);
@@ -395,9 +397,8 @@ body.nav-on .corner { opacity: .75; }
   display: flex; flex-wrap: wrap; gap: 12px 28px; margin-top: 40px;
   font-family: var(--f-mono); font-stretch: 80%; text-transform: uppercase; letter-spacing: .04em; font-size: 14px;
 }
-.foot-row a { text-decoration: none; opacity: .8; }
-.foot-row a:hover { opacity: 1; }
-.foot-row span { margin-right: auto; opacity: .6; }
+.foot-row a { text-decoration: none; }
+.foot-row span { margin-right: auto; }
 
 /* ─── modale showreel ─── */
 .modal {
@@ -409,7 +410,7 @@ body.nav-on .corner { opacity: .75; }
 .modal-box { width: min(92vw, 160vh); aspect-ratio: 16 / 9; position: relative; background: #0a0a0a; border-radius: 10px; overflow: hidden; }
 .modal-box iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 .modal-fb { position: absolute; inset: 0; display: grid; place-content: center; gap: 18px; text-align: center; padding: 24px; }
-.modal-fb p { margin: 0; max-width: 34em; opacity: .8; }
+.modal-fb p { margin: 0; max-width: 34em; }
 .modal-x { position: absolute; top: 18px; right: var(--pad); background: none; border: 0; cursor: pointer; font-family: var(--f-mono); font-stretch: 80%; text-transform: uppercase; letter-spacing: .04em; font-size: 14px; }
 
 /* ─── telefono ─── */

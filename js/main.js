@@ -3,6 +3,7 @@
 import { PROJECTS, MEMBERS } from "./data.js";
 import { VIMEO, mountBackground, mountFull } from "./vimeo.js";
 import { createMosaic } from "./mosaic.js";
+import { playIntro } from "./intro.js";
 
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
@@ -77,6 +78,7 @@ $$(".polaroid").forEach((el) => {
 });
 
 /* ═══ apertura ═══ */
+playIntro();
 const hero = $(".hero");
 const stage = $(".hero-stage");
 const front = $("#heroFront");

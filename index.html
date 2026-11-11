@@ -9,8 +9,16 @@
 <link rel="icon" href="logo/moneta-crema.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Datatype:wdth,wght@75..100,100..900&family=Inter:opsz,wght@14..32,400..600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Datatype:wdth,wght@75..100,100..900&family=Radio+Canada+Big:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
+<script>
+  // intro della moneta: la classe va messa prima del primo disegno, se no si vede il sito e poi sparisce.
+  // Se js/main.js non parte entro 4 secondi, il sito si mostra comunque.
+  if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    document.documentElement.classList.add("intro");
+    setTimeout(function () { if (!window.mkaIntro) document.documentElement.classList.remove("intro"); }, 4000);
+  }
+</script>
 <noscript><style>
   .hero{height:auto}
   .hero-stage{position:relative}
@@ -52,7 +60,9 @@
 
     <div class="hero-front" id="heroFront">
       <h1 class="hero-logo">
-        <img src="logo/matrioska-creativa-crema.svg" alt="Matrioska Creativa" width="1010" height="346">
+        <!-- logo diviso in due: le lettere e la moneta al posto della O, che nell'intro cade e poi torna qui -->
+        <img class="hero-letters" src="logo/matrioska-creativa-lettere-crema.svg" alt="Matrioska Creativa" width="1010" height="346">
+        <img class="hero-coin" id="heroCoin" src="logo/moneta-crema.svg" alt="" width="396" height="396">
       </h1>
       <p class="hero-line">Collettivo di multimedia production</p>
       <div class="hero-bottom">

@@ -70,19 +70,36 @@ allargandosi dal centro e ha in coda la voce "Prenota call" in rosso.
 | `--cream` | `#F1EDE4` | testo su nero, sezione del collettivo |
 | `--black` / `--white` | | fondo, polaroid |
 
-**Font.** Datatype è su Google Fonts ed è quello originale (qui un po'
-stretto, `font-stretch: 80%`, come nel campionario). Neue Haas Grotesk Display
-è commerciale e non si può ricavare dal PDF: lì dentro ci sono solo le lettere
-del campionario, senza accenti né punteggiatura, e la licenza della versione
-incorporata non copre il web. Al suo posto c'è Inter con l'asse ottico a 32
-(cioè Inter Display, lo stesso che usa unscene). In `css/style.css` c'è già il
-`@font-face` per i file veri: con la licenza web basta mettere
-`NHaasGroteskDSPro-55Rg.woff2` e `NHaasGroteskDSPro-65Md.woff2` in `fonts/`.
+**Font.** Il primario è Radio Canada Big, scelto dal collettivo al posto di
+Neue Haas Grotesk Display (che stava nel branding ma aveva bisogno di una
+licenza web). Si carica da Google Fonts con due soli pesi: regular 400 per i
+testi, medium 500 per i titoli (titoli di sezione, titoli delle card, nomi
+sulle polaroid, frase d'apertura del collettivo). Il secondario resta
+Datatype, anche lui da Google Fonts (qui un po' stretto, `font-stretch: 80%`,
+come nel campionario).
 
 **Loghi.** Estratti dal PDF in vettoriale con `pdftocairo -svg` (pagina 2 per
 il logo esteso, pagina 5 per la moneta), ripuliti e ritagliati. In `logo/` ci
 sono due versioni: quella con `currentColor` da usare inline e quella color
-crema per i tag `<img>`.
+crema per i tag `<img>`. Nella home il logo esteso è montato in due pezzi:
+`matrioska-creativa-lettere*.svg` (le lettere senza la moneta) e sopra il
+pittogramma intero `moneta-crema.svg`. Nel logo del PDF la moneta è disegnata
+già tagliata in alto a sinistra, dove la copre la R: il pittogramma invece è
+completo ed è lo stesso disegno, in scala 0,457. Posizione e scala sono state
+ricavate facendo combaciare M, K, A e la matrioska dei due disegni (scarto
+massimo 0,06 unità del viewBox).
+
+**Intro.** All'arrivo lo schermo è nero. La moneta cade dall'alto facendo due
+giri su se stessa, tocca terra a 0,7 secondi, fa due rimbalzi e ondeggia come
+una moneta che si ferma sul tavolo. Poi si rimpicciolisce lungo un piccolo arco
+fino al suo posto nella O di MATRIOSKA, facendo un altro giro. A metà di questo
+viaggio le lettere si aprono a cerchio partendo dalla moneta e dietro compaiono
+il mosaico, la frase, il bottone e la testata. In tutto dura circa 3,5 secondi.
+Il giro su se stessa si ottiene schiacciando la larghezza della moneta, così la
+scritta MKA non si vede mai allo specchio. Qualsiasi gesto (rotellina, tasto,
+tocco, clic) la chiude subito e lascia il sito com'è. Non parte se il sistema
+chiede di ridurre il movimento o se la pagina si ricarica già scorsa. Se il
+JavaScript non parte, dopo 4 secondi il sito si mostra comunque.
 
 ## Struttura
 
@@ -91,12 +108,12 @@ index.html        apertura e showreel · progetti · collettivo · call · piede
 progetti.html     archivio di tutti i lavori, con anteprima al cursore
 css/style.css     tutti gli stili, token in :root
 js/main.js        scroll dell'apertura · pillola · card · polaroid · form
+js/intro.js       intro della moneta che cade e torna nel logo
 js/mosaic.js      il mosaico su canvas e i fermi immagine dello showreel
 js/data.js        progetti e membri: si cambia il contenuto solo qui
 js/vimeo.js       ID dei video e player Vimeo, con ripiego
 img/              copertine dei post Instagram di @mka.collective
 logo/             loghi SVG estratti da branding.pdf
-fonts/            vuota, per Neue Haas quando ci sarà la licenza
 ```
 
 ## Vimeo

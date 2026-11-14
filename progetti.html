@@ -12,7 +12,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Datatype:wdth,wght@75..100,100..900&family=Radio+Canada+Big:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 <style>
-  .index { padding: 20vh var(--pad) 18vh; }
+  /* in alto basta lo spazio per la testata fissa più un po' di respiro */
+  .index { padding: max(110px, 12vh) var(--pad) 18vh; }
   .rows { list-style: none; margin: 0; padding: 0; border-top: 1px solid rgba(241,237,228,.2); }
   .rows a {
     display: grid; grid-template-columns: 60px 1.4fr 1fr 1fr 40px; align-items: center; gap: 16px;

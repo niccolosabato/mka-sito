@@ -138,7 +138,7 @@ body.nav-on .corner { opacity: 1; }
 
 .hero-shade {
   position: absolute; inset: 0; pointer-events: none;
-  background: radial-gradient(60% 55% at 50% 50%, rgba(0,0,0,.68), rgba(0,0,0,.32) 70%, rgba(0,0,0,.5));
+  background: radial-gradient(60% 55% at 50% 50%, rgba(0,0,0,.8), rgba(0,0,0,.5) 70%, rgba(0,0,0,.65));
   opacity: var(--shade, 1);
 }
 .hero-front {
@@ -247,7 +247,7 @@ body.nav-on .corner { opacity: 1; }
 .reveal.in { opacity: 1; transform: none; }
 
 /* ─── progetti ─── */
-.work { position: relative; z-index: 2; background: var(--black); padding: 20vh var(--pad) 16vh; }
+.work { position: relative; z-index: 2; background: var(--black); padding: 18vh var(--pad) 12vh; }
 .sec-head {
   display: grid; grid-template-columns: 1fr auto; align-items: end;
   margin-bottom: clamp(40px, 7vw, 96px);
@@ -316,7 +316,7 @@ body.nav-on .corner { opacity: 1; }
   position: relative; z-index: 2;
   background: var(--black); color: var(--cream);
   display: grid; grid-template-columns: minmax(300px, 5fr) 7fr; gap: 40px;
-  padding: 18vh var(--pad) 16vh;
+  padding: 12vh var(--pad) 12vh;
 }
 .crew-text { align-self: start; position: sticky; top: 110px; }
 .crew .sec-title { font-size: clamp(64px, 9vw, 160px); }
@@ -346,7 +346,7 @@ body.nav-on .corner { opacity: 1; }
   position: relative; z-index: 2;
   background: var(--black); color: var(--cream);
   display: grid; grid-template-columns: 5fr 7fr; gap: clamp(32px, 5vw, 80px);
-  padding: 18vh var(--pad) 18vh;
+  padding: 12vh var(--pad) 14vh;
 }
 .call-lead { margin: 30px 0 0; font-size: clamp(18px, 1.6vw, 22px); max-width: 26em; }
 .call-links { list-style: none; padding: 0; margin: 36px 0 0; display: grid; gap: 8px; }
@@ -383,7 +383,7 @@ body.nav-on .corner { opacity: 1; }
 .form-msg { margin: 0; font-family: var(--f-mono); font-stretch: 80%; text-transform: uppercase; letter-spacing: .04em; font-size: 14px; }
 
 /* ─── piede ─── */
-.foot { position: relative; z-index: 2; background: var(--black); padding: 12vh var(--pad) 130px; }
+.foot { position: relative; z-index: 2; background: var(--black); padding: 10vh var(--pad) 130px; }
 .foot-logo { width: 100%; height: auto; }
 .foot-row {
   display: flex; flex-wrap: wrap; gap: 12px 28px; margin-top: 40px;
@@ -407,7 +407,12 @@ body.nav-on .corner { opacity: 1; }
 
 /* ─── telefono ─── */
 @media (max-width: 860px) {
-  .work-grid { grid-template-columns: 1fr; gap: 48px; }
+  /* sul telefono spazi fissi e stretti tra le sezioni: in vh diventavano bande nere enormi */
+  .work { padding: 80px var(--pad) 60px; }
+  .crew, .call { padding: 60px var(--pad); gap: 32px; }
+  .foot { padding: 60px var(--pad) 120px; }
+  .sec-head { margin-bottom: 36px; }
+  .work-grid { grid-template-columns: 1fr; gap: 28px; }
   .crew, .call { grid-template-columns: 1fr; }
   .crew-text { position: static; }
   .svc { grid-template-columns: 1fr; }

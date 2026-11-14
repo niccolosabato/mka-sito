@@ -19,7 +19,12 @@
     padding: 22px 0; border-bottom: 1px solid rgba(241,237,228,.2); text-decoration: none;
     transition: padding .45s var(--ease), background-color .3s;
   }
-  .rows a:hover { padding-left: 14px; padding-right: 14px; background: rgba(241,237,228,.04); }
+  /* solo con il mouse: sul touch :hover resta acceso dopo il tocco */
+  @media (hover: hover) {
+    .rows a:hover { padding-left: 14px; padding-right: 14px; background: rgba(241,237,228,.04); }
+  }
+  /* cliente e tipo: sul desktop sono due colonne della griglia, sul telefono una riga sotto il titolo */
+  .rows .meta { display: contents; }
   .rows .t { font-size: clamp(22px, 3vw, 44px); font-weight: 500; letter-spacing: -.03em; line-height: 1.05; }
   .rows .m { font-family: var(--f-mono); font-stretch: 80%; font-size: 14px; text-transform: uppercase; letter-spacing: .04em; }
   .rows .ar { justify-self: end; }
@@ -30,9 +35,12 @@
   .peek.on { opacity: 1; transform: translate(-50%, -50%) scale(1); }
   .peek img { width: 100%; height: 100%; object-fit: cover; }
   @media (max-width: 760px) {
-    .rows a { grid-template-columns: 36px 1fr 24px; }
-    .rows .m { grid-column: 2; }
-    .rows .ar { grid-row: 1; grid-column: 3; }
+    .rows a { grid-template-columns: 26px 1fr 16px; gap: 8px 12px; align-items: baseline; padding: 20px 0; }
+    .rows .n { grid-column: 1; grid-row: 1; }
+    .rows .t { grid-column: 2; grid-row: 1; font-size: 26px; }
+    .rows .ar { grid-column: 3; grid-row: 1; }
+    .rows .meta { grid-column: 2; grid-row: 2; display: flex; flex-wrap: wrap; gap: 4px 14px; }
+    .rows .meta .m { font-size: 13px; }
     .peek { display: none; }
   }
 </style>
@@ -57,10 +65,9 @@
 
 <nav class="pill on" aria-label="Navigazione">
   <span class="pill-ind" aria-hidden="true" style="opacity:0"></span>
-  <a href="index.html#top" class="pl-reel">Showreel</a>
+  <a href="index.html#showreel" class="pl-reel">Showreel</a>
   <a href="index.html#progetti" class="is-lit" style="background:#fafafa">Progetti</a>
-  <a href="index.html#collettivo">Collettivo</a>
-  <a href="index.html#call">Contatti</a>
+  <a href="index.html#servizi">Servizi</a>
   <i class="pill-sep" aria-hidden="true"></i>
   <a href="index.html#call" class="pill-call">Prenota call</a>
 </nav>
@@ -70,15 +77,15 @@
   const rows = document.getElementById("rows");
   rows.innerHTML = PROJECTS.map((p, i) => `
     <li><a href="${p.url}" target="_blank" rel="noopener" data-img="img/${p.imgs[0]}.jpg">
-      <span class="m">${String(i + 1).padStart(2, "0")}</span>
+      <span class="m n">${String(i + 1).padStart(2, "0")}</span>
       <span class="t">${p.title}</span>
-      <span class="m">${p.client}</span>
-      <span class="m">${p.tag}</span>
+      <span class="meta"><span class="m">${p.client}</span><span class="m">${p.tag}</span></span>
       <span class="ar" aria-hidden="true">&#8599;</span>
     </a></li>`).join("");
   const peek = document.getElementById("peek"), pimg = document.getElementById("peekImg");
   rows.querySelectorAll("a").forEach((a) => {
-    a.addEventListener("pointerenter", () => { pimg.src = a.dataset.img; peek.classList.add("on"); });
+    // anteprima solo con il mouse: al tocco comparirebbe e resterebbe lì
+    a.addEventListener("pointerenter", (e) => { if (e.pointerType !== "mouse") return; pimg.src = a.dataset.img; peek.classList.add("on"); });
     a.addEventListener("pointerleave", () => peek.classList.remove("on"));
     a.addEventListener("pointermove", (e) => { peek.style.left = e.clientX + 180 + "px"; peek.style.top = e.clientY + "px"; });
   });

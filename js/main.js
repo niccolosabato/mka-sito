@@ -1,6 +1,6 @@
 // MKA, prototipo. Un solo giro di requestAnimationFrame legge lo scroll nativo
 // e muove l'apertura: niente scroll-jacking, tutto reversibile.
-import { PROJECTS, MEMBERS } from "./data.js";
+import { PROJECTS, SERVICES } from "./data.js";
 import { VIMEO, mountBackground, mountFull } from "./vimeo.js";
 import { createMosaic } from "./mosaic.js";
 import { playIntro } from "./intro.js";
@@ -15,67 +15,26 @@ const img = (name) => `img/${name}.jpg`;
 /* ═══ progetti ═══ */
 const grid = $("#workGrid");
 grid.innerHTML = PROJECTS.filter((p) => p.featured).map((p, i) => `
-  <a class="card reveal" href="${p.url}" target="_blank" rel="noopener" style="--acc:${p.acc};${p.ink ? `--tag-ink:${p.ink}` : ""}">
+  <a class="card reveal" href="${p.url}" target="_blank" rel="noopener">
     <div class="card-media">
       ${p.imgs.map((n, k) => `<img src="${img(n)}" alt="" loading="lazy" class="${k ? "" : "on"}" style="object-position:${p.pos || "50% 50%"}">`).join("")}
-    </div>
-    <div class="card-meta">
-      <span class="card-n">${String(i + 1).padStart(2, "0")}</span>
-      <h3 class="card-title">${p.title}</h3>
-      <span class="card-client">${p.client}</span>
-      <span class="card-tag">${p.tag}</span>
+      <div class="card-meta">
+        <span class="card-n">${String(i + 1).padStart(2, "0")}</span>
+        <h3 class="card-title">${p.title}</h3>
+        <span class="card-client">${p.client}</span>
+        <span class="card-tag">${p.tag}</span>
+      </div>
     </div>
   </a>`).join("");
 
-// all'hover l'anteprima scorre i fermi immagine del lavoro (finché non ci sono i video)
-$$(".card").forEach((card) => {
-  const frames = $$(".card-media img", card);
-  if (frames.length < 2) return;
-  let t = null, k = 0;
-  const show = (n) => frames.forEach((f, j) => f.classList.toggle("on", j === n));
-  card.addEventListener("pointerenter", () => {
-    t = setInterval(() => { k = (k + 1) % frames.length; show(k); }, 900);
-  });
-  card.addEventListener("pointerleave", () => { clearInterval(t); k = 0; show(0); });
-});
-
-/* ═══ polaroid ═══ */
-const table = $("#table");
-table.innerHTML = MEMBERS.map((m, i) => `
-  <figure class="polaroid" style="left:${m.x};top:${m.y};--rot:${m.rot}deg;z-index:${i + 1}">
-    <img src="${img(m.img)}" alt="" style="object-position:${m.pos}" draggable="false">
-    <figcaption><b>${m.name}</b><span>${m.role}</span></figcaption>
-  </figure>`).join("");
-
-const wide = matchMedia("(min-width: 861px)");
-let zTop = MEMBERS.length + 1;
-$$(".polaroid").forEach((el) => {
-  let sx = 0, sy = 0, bx = 0, by = 0, id = null;
-  el.addEventListener("pointerdown", (e) => {
-    if (!wide.matches || e.button !== 0) return;
-    id = e.pointerId;
-    el.setPointerCapture(id);
-    el.classList.add("drag");
-    el.style.zIndex = ++zTop;
-    sx = e.clientX; sy = e.clientY;
-    bx = parseFloat(el.style.getPropertyValue("--x")) || 0;
-    by = parseFloat(el.style.getPropertyValue("--y")) || 0;
-  });
-  el.addEventListener("pointermove", (e) => {
-    if (e.pointerId !== id) return;
-    el.style.setProperty("--x", `${bx + e.clientX - sx}px`);
-    el.style.setProperty("--y", `${by + e.clientY - sy}px`);
-  });
-  const end = (e) => {
-    if (e.pointerId !== id) return;
-    id = null;
-    el.classList.remove("drag");
-    // posata di nuovo sul tavolo, prende un'inclinazione nuova
-    el.style.setProperty("--rot", `${(Math.random() * 12 - 6).toFixed(1)}deg`);
-  };
-  el.addEventListener("pointerup", end);
-  el.addEventListener("pointercancel", end);
-});
+/* ═══ i nostri servizi: i tre blocchi ═══ */
+$("#services").innerHTML = SERVICES.map((sv, i) => `
+  <article class="svc reveal">
+    <span class="svc-n">${String(i + 1).padStart(2, "0")}</span>
+    <h3 class="svc-title">${sv.title}</h3>
+    <p class="svc-text">${sv.text}</p>
+    <ul class="svc-items">${sv.items.map((t) => `<li>${t}</li>`).join("")}</ul>
+  </article>`).join("");
 
 /* ═══ apertura ═══ */
 playIntro();
@@ -194,8 +153,10 @@ modal.addEventListener("close", () => $("#modalBox").replaceChildren());
 /* ═══ pillola: la capsula chiara segue la sezione corrente e il puntatore ═══ */
 const ind = $(".pill-ind");
 const links = $$(".pill a[data-sec]");
-let active = links[0];
-let lit = null;
+const secs = links.map((a) => document.getElementById(a.dataset.sec));
+let active = null;   // voce della sezione in cui ci si trova
+let lit = null;      // voce sotto il mouse (solo mouse, mai dita)
+let going = null;    // voce appena toccata: la capsula ci resta finché lo scroll non si ferma
 
 function moveInd(a) {
   if (!a || !a.offsetWidth) {
@@ -208,23 +169,46 @@ function moveInd(a) {
   ind.style.width = `${a.offsetWidth}px`;
   links.forEach((l) => l.classList.toggle("is-lit", l === a));
 }
-links.forEach((a) => {
-  a.addEventListener("pointerenter", () => { lit = a; moveInd(a); });
-});
-pill.addEventListener("pointerleave", () => { lit = null; moveInd(active); });
+const paint = () => moveInd(going || lit || active);
 
-const secs = ["top", "progetti", "collettivo", "call"].map((id) => document.getElementById(id));
-// su telefono "Showreel" è nascosta: in apertura la capsula semplicemente sparisce
-const secIO = new IntersectionObserver((entries) => {
-  entries.forEach((e) => {
-    if (!e.isIntersecting) return;
-    const a = links.find((l) => l.dataset.sec === e.target.id);
-    active = a && a.offsetWidth ? a : null;
-    document.body.classList.toggle("on-call", e.target.id === "call");
-    if (!lit) moveInd(active);
-  });
-}, { rootMargin: "-45% 0px -45% 0px" });
-secs.forEach((s) => secIO.observe(s));
+// sezione corrente: l'ultima il cui inizio ha passato la metà dello schermo.
+// In fondo alla pagina (piede) resta accesa l'ultima, cioè la call.
+function findActive() {
+  const mid = innerHeight / 2;
+  let a = null;
+  secs.forEach((sec, k) => { if (sec && sec.getBoundingClientRect().top <= mid) a = links[k]; });
+  if (a !== active) { active = a; paint(); }
+}
+
+links.forEach((a) => {
+  a.addEventListener("pointerenter", (e) => { if (e.pointerType === "mouse") { lit = a; paint(); } });
+  // al tocco la capsula va dritta alla destinazione, senza passare per le sezioni attraversate
+  a.addEventListener("click", () => { going = a; lit = null; paint(); settle(); });
+});
+pill.addEventListener("pointerleave", (e) => { if (e.pointerType === "mouse") { lit = null; paint(); } });
+
+let settleT = 0;
+function settle() {
+  clearTimeout(settleT);
+  settleT = setTimeout(() => { going = null; findActive(); paint(); }, going ? 220 : 0);
+}
+addEventListener("scroll", () => { findActive(); if (going) settle(); }, { passive: true });
+
+// "Showreel" porta al reel già aperto a tutto schermo, non all'inizio del sito:
+// a 0,6 del tratto bloccato lo zoom e le velature sono finiti (vedi update()).
+const REEL_P = 0.6;
+const reelY = () => hero.getBoundingClientRect().top + scrollY + (hero.offsetHeight - stage.offsetHeight) * REEL_P;
+$(".pill .pl-reel").addEventListener("click", (e) => {
+  e.preventDefault();
+  scrollTo({ top: reelY(), behavior: reduced ? "auto" : "smooth" });
+});
+// arrivo da progetti.html con index.html#showreel
+if (location.hash === "#showreel") {
+  history.replaceState(null, "", location.pathname);
+  requestAnimationFrame(() => scrollTo({ top: reelY(), behavior: "auto" }));
+}
+addEventListener("resize", () => { findActive(); paint(); });
+findActive();
 
 /* ═══ ingressi ═══ */
 const revIO = new IntersectionObserver((entries) => {
@@ -234,24 +218,59 @@ const revIO = new IntersectionObserver((entries) => {
 }, { rootMargin: "0px 0px -8% 0px" });
 $$(".reveal").forEach((el) => revIO.observe(el));
 
-/* ═══ etichetta "Guarda" che segue il puntatore sulle card ═══ */
+/* ═══ passaggio del mouse su card e blocchi dei servizi ═══ */
+// Niente :hover nel CSS: scorrendo con la rotella il mouse resta fermo e la
+// pagina gli passa sotto, ma il browser aggiorna :hover (e il puntatore) solo
+// quando il mouse si muove, così la card restava evidenziata fuori sezione.
+// Qui si guarda cosa c'è sotto il puntatore sia al movimento sia allo scroll,
+// e lo stato acceso è la classe .is-on.
 const cur = $("#cur");
-let cx = 0, cy = 0, tx = 0, ty = 0, curOn = false, curRaf = 0;
-function curLoop() {
-  cx += (tx - cx) * 0.22; cy += (ty - cy) * 0.22;
-  cur.style.left = `${cx}px`; cur.style.top = `${cy}px`;
-  curRaf = curOn || Math.abs(tx - cx) > 0.5 ? requestAnimationFrame(curLoop) : 0;
+const HOVERABLE = ".card, .svc";
+let mx = -1, my = -1, cx = 0, cy = 0, hovered = null, curRaf = 0, check = 0;
+
+// le card con più fermi immagine li scorrono finché sono accese (in attesa dei video)
+let frameT = 0;
+function frames(card, on) {
+  clearInterval(frameT);
+  const imgs = card ? $$(".card-media img", card) : [];
+  if (imgs.length < 2) return;
+  let k = 0;
+  const show = (n) => imgs.forEach((f, j) => f.classList.toggle("on", j === n));
+  if (on) frameT = setInterval(() => { k = (k + 1) % imgs.length; show(k); }, 900);
+  else show(0);
 }
-$$(".card").forEach((c) => {
-  c.addEventListener("pointerenter", (e) => {
-    if (e.pointerType !== "mouse") return;
-    tx = cx = e.clientX; ty = cy = e.clientY;
-    curOn = true; cur.classList.add("on");
-    if (!curRaf) curRaf = requestAnimationFrame(curLoop);
-  });
-  c.addEventListener("pointermove", (e) => { tx = e.clientX; ty = e.clientY; });
-  c.addEventListener("pointerleave", () => { curOn = false; cur.classList.remove("on"); });
-});
+
+function curLoop() {
+  cx += (mx - cx) * 0.22; cy += (my - cy) * 0.22;
+  cur.style.left = `${cx}px`; cur.style.top = `${cy}px`;
+  const moving = Math.abs(mx - cx) > 0.5 || Math.abs(my - cy) > 0.5;
+  curRaf = hovered?.classList.contains("card") || moving ? requestAnimationFrame(curLoop) : 0;
+}
+
+function setLit(el) {
+  if (el === hovered) return;
+  if (hovered) { hovered.classList.remove("is-on"); if (hovered.classList.contains("card")) frames(hovered, false); }
+  hovered = el;
+  const isCard = !!el?.classList.contains("card");
+  if (el) { el.classList.add("is-on"); if (isCard) frames(el, true); }
+  if (isCard && !cur.classList.contains("on")) { cx = mx; cy = my; }
+  cur.classList.toggle("on", isCard);
+  if (isCard && !curRaf) curRaf = requestAnimationFrame(curLoop);
+}
+
+function recheck() {
+  check = 0;
+  if (mx < 0) return;
+  setLit(document.elementFromPoint(mx, my)?.closest(HOVERABLE) || null);
+}
+
+addEventListener("pointermove", (e) => {
+  if (e.pointerType !== "mouse") return;
+  mx = e.clientX; my = e.clientY;
+  if (!check) check = requestAnimationFrame(recheck);
+}, { passive: true });
+addEventListener("scroll", () => { if (!check) check = requestAnimationFrame(recheck); }, { passive: true });
+document.documentElement.addEventListener("pointerleave", () => { mx = my = -1; setLit(null); });
 
 /* ═══ form: nessun backend nel prototipo ═══ */
 const form = $("#callForm");

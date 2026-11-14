@@ -22,17 +22,20 @@ moduli JavaScript non partono aprendo il file direttamente.
    Arrivati a tutto schermo compaiono due velature sfumate con il timecode, e
    dal basso si apre la **pillola di navigazione**, che da lì resta
    sempre visibile. Risalendo tutto torna com'era.
-3. **Progetti.** Sei lavori su due colonne e tre righe. All'hover l'anteprima
-   scorre i fermi immagine del lavoro e compare l'etichetta "Guarda". In fondo
+3. **Progetti.** Sei lavori su due colonne e tre righe, con titolo, cliente
+   e tipo scritti dentro la miniatura. All'hover l'anteprima
+   scorre i fermi immagine del lavoro, si accende un bordo rosso e compare l'etichetta "Guarda". In fondo
    il link a `progetti.html` con l'elenco completo.
-4. **Il collettivo.** I membri sono polaroid sparse su un tavolo color crema:
-   si raddrizzano al passaggio del mouse e si possono trascinare. Su telefono
-   diventano una griglia a due colonne.
-5. **Prenota una call.** Form classico su fondo rosso: nome, email, azienda,
+4. **I nostri servizi.** Cosa fa MKA: testo a sinistra e tre blocchi a destra
+   (direzione creativa, servizi di produzione multimediale, identità e
+   strategia), ognuno con una breve descrizione e le voci di servizio. Su
+   telefono i blocchi vanno sotto il testo. Le polaroid dei membri sono state
+   tolte su richiesta di Niccolò.
+5. **Prenota una call.** Form classico su fondo nero: nome, email, azienda,
    giorno preferito, tipo di lavoro e budget a scelta rapida, messaggio.
 
 L'invito alla call è sempre presente: nell'apertura, in alto a destra in ogni
-momento (diventa nero sopra la sezione rossa) e come ultima voce della pillola.
+momento e come ultima voce della pillola.
 
 ## Da dove vengono le due animazioni
 
@@ -63,18 +66,18 @@ allargandosi dal centro e ha in coda la voce "Prenota call" in rosso.
 
 | Token | Colore | Uso |
 |---|---|---|
-| `--red` | `#A93F33` | invito alla call, sezione contatti |
-| `--slate` | `#748C8E` | etichette dei progetti |
-| `--blue` | `#229CD2` | etichette dei progetti |
-| `--yellow` | `#F0E630` | etichette, selezione del testo, focus, errori del form |
-| `--cream` | `#F1EDE4` | testo su nero, sezione del collettivo |
-| `--black` / `--white` | | fondo, polaroid |
+| `--red` | `#A93F33` | bottoni della call, etichette e bordo delle card, selezione del testo, errori del form |
+| `--cream` | `#F1EDE4` | testo su nero, focus da tastiera |
+| `--black` / `--white` | | fondo |
+
+Il sito usa solo nero, crema (il "bianco" del sito) e rosso, per scelta di
+Niccolò: grigio azzurro, blu e giallo del branding non compaiono.
 
 **Font.** Il primario è Radio Canada Big, scelto dal collettivo al posto di
 Neue Haas Grotesk Display (che stava nel branding ma aveva bisogno di una
 licenza web). Si carica da Google Fonts con due soli pesi: regular 400 per i
-testi, medium 500 per i titoli (titoli di sezione, titoli delle card, nomi
-sulle polaroid, frase d'apertura del collettivo). Il secondario resta
+testi, medium 500 per i titoli (titoli di sezione, titoli delle card, titoli
+dei blocchi dei servizi, frase d'apertura dei servizi). Il secondario resta
 Datatype, anche lui da Google Fonts (qui un po' stretto, `font-stretch: 80%`,
 come nel campionario).
 
@@ -104,13 +107,13 @@ JavaScript non parte, dopo 4 secondi il sito si mostra comunque.
 ## Struttura
 
 ```
-index.html        apertura e showreel · progetti · collettivo · call · piede · pillola
+index.html        apertura e showreel · progetti · servizi · call · piede · pillola
 progetti.html     archivio di tutti i lavori, con anteprima al cursore
 css/style.css     tutti gli stili, token in :root
-js/main.js        scroll dell'apertura · pillola · card · polaroid · form
+js/main.js        scroll dell'apertura · pillola · card · blocchi dei servizi · form
 js/intro.js       intro della moneta che cade e torna nel logo
 js/mosaic.js      il mosaico su canvas e i fermi immagine dello showreel
-js/data.js        progetti e membri: si cambia il contenuto solo qui
+js/data.js        progetti e blocchi dei servizi: si cambia il contenuto solo qui
 js/vimeo.js       ID dei video e player Vimeo, con ripiego
 img/              copertine dei post Instagram di @mka.collective
 logo/             loghi SVG estratti da branding.pdf
@@ -143,7 +146,7 @@ immagine da solo. Il player si posa sopra la tessera centrale del canvas
 dai 13 post Instagram di `@mka.collective` e ridotte a 1600px al massimo. I
 titoli e i clienti dei progetti (Estate Italiana per Reviva, Presto Fashion
 Film, Cargo & Belt e Look Book 001 per Presto), presi dalle didascalie. I due
-testi del collettivo, presi dai post "manifesto" e "what MKA do". I link a
+testi della sezione servizi, presi dai post "manifesto" e "what MKA do". I link a
 Instagram e Vimeo.
 
 Provvisorio o inventato, quindi da far confermare:
@@ -151,8 +154,8 @@ Provvisorio o inventato, quindi da far confermare:
   non avevano un titolo, sono ricavati dalla didascalia;
 - le etichette di tipo (Fashion film, Shooting, Corto…) e "Racconto dal
   Salento";
-- **tutti i membri**: nomi ("Nome Cognome"), ruoli e foto. Le foto delle
-  polaroid sono fotogrammi presi dai lavori;
+- **i tre blocchi dei servizi**: titoli, descrizioni e voci di servizio
+  sono provvisori, da compilare (in `SERVICES` di `js/data.js`);
 - `info@matrioskacreativa.it` è un **indirizzo inventato**;
 - il testo sotto "Prenota una call" e le fasce di budget;
 - i link delle card portano ai post Instagram, in attesa delle pagine dei
@@ -173,6 +176,9 @@ direttamente.
 - Sui telefoni l'apertura usa l'altezza dello schermo con la barra degli
   indirizzi nascosta, così quando la barra sparisce sotto il reel non resta
   una fascia vuota.
-- Su telefono la pillola perde la voce "Showreel" per starci in larghezza.
+- Su telefono la pillola tiene tutte le voci, Showreel compreso, con testo e
+  margini un po' più stretti.
+- Le voci della pillola sono Showreel, Progetti, Servizi e Prenota call: quando
+  si è nella sezione della call la capsula chiara passa sopra il bottone rosso.
   Provato fino a 570px di finestra (il minimo che Chrome desktop consente);
   sotto i 380px le voci si stringono ancora.

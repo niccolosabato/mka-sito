@@ -345,42 +345,27 @@ body.nav-on .corner { opacity: 1; }
 .call {
   position: relative; z-index: 2;
   background: var(--black); color: var(--cream);
-  display: grid; grid-template-columns: 5fr 7fr; gap: clamp(32px, 5vw, 80px);
+  display: grid; grid-template-columns: minmax(240px, 24vw) 1fr; gap: 40px;
   padding: 12vh var(--pad) 14vh;
 }
+/* colonna dei testi ferma mentre si scorre, come nei servizi. Stretta apposta:
+   sotto gli 800px circa di iframe Cal.com impila dettagli, mese e orari */
+.call-side { align-self: start; position: sticky; top: 110px; }
+.call .sec-title { font-size: clamp(56px, 7vw, 120px); }
 .call-lead { margin: 30px 0 0; font-size: clamp(18px, 1.6vw, 22px); max-width: 26em; }
 .call-links { list-style: none; padding: 0; margin: 36px 0 0; display: grid; gap: 8px; }
 .call-links a { font-family: var(--f-mono); font-stretch: 80%; text-transform: uppercase; letter-spacing: .04em; font-size: 15px; text-decoration: none; border-bottom: 1px solid rgba(241,237,228,.4); }
 .call-links a:hover { border-color: var(--cream); }
 
-.form { display: grid; gap: 28px; align-content: start; padding-top: 34px; }
-.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
-.field { display: grid; gap: 6px; }
-.field > span, .chips legend {
-  font-family: var(--f-mono); font-stretch: 80%; text-transform: uppercase; letter-spacing: .04em; font-size: 13px;
+.cal-wrap { min-width: 0; }
+/* altezza minima mentre l'iframe carica, così la pagina non salta */
+.cal-inline { width: 100%; min-height: 560px; overflow: auto; }
+.cal-fallback {
+  margin: 18px 0 0; font-family: var(--f-mono); font-stretch: 80%; text-transform: uppercase; letter-spacing: .04em; font-size: 13px;
 }
-.field input, .field textarea {
-  width: 100%; padding: 10px 0; border: 0; border-bottom: 1px solid rgba(241,237,228,.45);
-  background: transparent; color: var(--cream); font: inherit; font-size: 19px; border-radius: 0;
-  transition: border-color .3s;
-}
-.field textarea { resize: vertical; min-height: 110px; }
-.field input:focus, .field textarea:focus { outline: none; border-color: var(--cream); }
-.field input::-webkit-calendar-picker-indicator { filter: invert(1); opacity: .8; }
-.field.bad input, .field.bad textarea { border-color: var(--red); }
-.chips { border: 0; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px; }
-.chips legend { padding: 0; margin-bottom: 12px; }
-.chips label { position: relative; }
-.chips input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
-.chips span {
-  display: inline-flex; height: 36px; align-items: center; padding: 0 14px; border-radius: 99px;
-  border: 1px solid rgba(241,237,228,.5); font-size: 15px; transition: background-color .25s, color .25s, border-color .25s;
-}
-.chips label:hover span { border-color: var(--cream); }
-.chips input:checked + span { background: var(--cream); color: var(--black); border-color: var(--cream); }
-.chips input:focus-visible + span { outline: 2px solid var(--cream); outline-offset: 3px; }
-.form-end { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
-.form-msg { margin: 0; font-family: var(--f-mono); font-stretch: 80%; text-transform: uppercase; letter-spacing: .04em; font-size: 14px; }
+.cal-wrap.is-ready .cal-fallback { display: none; }
+.cal-fallback a { text-decoration: none; border-bottom: 1px solid rgba(241,237,228,.4); }
+.cal-fallback a:hover { border-color: var(--cream); }
 
 /* ─── piede ─── */
 .foot { position: relative; z-index: 2; background: var(--black); padding: 10vh var(--pad) 130px; }
@@ -414,10 +399,10 @@ body.nav-on .corner { opacity: 1; }
   .sec-head { margin-bottom: 36px; }
   .work-grid { grid-template-columns: 1fr; gap: 28px; }
   .crew, .call { grid-template-columns: 1fr; }
+  .call-side { position: static; }
   .crew-text { position: static; }
   .svc { grid-template-columns: 1fr; }
   .svc-text, .svc-items { grid-column: 1; }
-  .row2 { grid-template-columns: 1fr; }
   .sec-head { grid-template-columns: 1fr; gap: 20px; }
   .link-all { justify-self: start; }
   .brand-sub { display: none; }

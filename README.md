@@ -31,8 +31,9 @@ moduli JavaScript non partono aprendo il file direttamente.
    strategia), ognuno con una breve descrizione e le voci di servizio. Su
    telefono i blocchi vanno sotto il testo. Le polaroid dei membri sono state
    tolte su richiesta di Niccolò.
-5. **Prenota una call.** Form classico su fondo nero: nome, email, azienda,
-   giorno preferito, tipo di lavoro e budget a scelta rapida, messaggio.
+5. **Prenota una call.** Calendario Cal.com incorporato su fondo nero
+   (account di MKA, evento `mka-mxgoxl/30min`): si scelgono giorno e ora e
+   l'invito con il link della videochiamata arriva via email.
 
 L'invito alla call è sempre presente: nell'apertura, in alto a destra in ogni
 momento e come ultima voce della pillola.
@@ -110,7 +111,8 @@ JavaScript non parte, dopo 4 secondi il sito si mostra comunque.
 index.html        apertura e showreel · progetti · servizi · call · piede · pillola
 progetti.html     archivio di tutti i lavori, con anteprima al cursore
 css/style.css     tutti gli stili, token in :root
-js/main.js        scroll dell'apertura · pillola · card · blocchi dei servizi · form
+js/main.js        scroll dell'apertura · pillola · card · blocchi dei servizi
+js/cal.js         calendario Cal.com della sezione call (CAL_LINK, colori)
 js/intro.js       intro della moneta che cade e torna nel logo
 js/mosaic.js      il mosaico su canvas e i fermi immagine dello showreel
 js/data.js        progetti e blocchi dei servizi: si cambia il contenuto solo qui
@@ -157,14 +159,18 @@ Provvisorio o inventato, quindi da far confermare:
 - **i tre blocchi dei servizi**: titoli, descrizioni e voci di servizio
   sono provvisori, da compilare (in `SERVICES` di `js/data.js`);
 - `info@matrioskacreativa.it` è un **indirizzo inventato**;
-- il testo sotto "Prenota una call" e le fasce di budget;
+- il testo sotto "Prenota una call";
 - i link delle card portano ai post Instagram, in attesa delle pagine dei
   progetti.
 
-Il form per ora non invia niente: controlla i campi obbligatori e mostra una
-conferma. Per il sito vero: Netlify Forms (come in `kyure_website`) o
-Formspree, oppure un collegamento a Calendly o Cal.com per fissare la call
-direttamente.
+La call si prenota con Cal.com, piano gratuito (novembre 2026): un solo
+utente, prenotazioni illimitate, ma resta la scritta "Cal.com" sotto il
+calendario (per toglierla serve il piano Teams, 12 $ a utente al mese). Il
+calendario si carica solo quando la sezione si avvicina, con tema scuro e
+colori del sito passati da `js/cal.js`. Font e struttura interna restano
+quelli di Cal.com. Se lo script non arriva resta visibile un link alla pagina
+di prenotazione. Orario a 24 ore, foto del profilo e descrizione dell'evento
+si impostano dall'account Cal.com, non dal sito.
 
 ## Accessibilità e casi limite
 

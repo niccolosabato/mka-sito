@@ -114,7 +114,7 @@
   <div class="call-side">
     <p class="label">03 · Contatti</p>
     <h2 id="call-h" class="sec-title reveal">Prenota<br>una call</h2>
-    <p class="call-lead reveal">Raccontaci il progetto in due righe. Ti scriviamo per fissare una chiamata di mezz'ora e capire insieme tempi, budget e forma.</p>
+    <p class="call-lead reveal">Scegli giorno e ora per una chiamata di mezz'ora: capiamo insieme tempi, budget e forma del progetto. L'invito con il link arriva via email.</p>
     <ul class="call-links">
       <li><a href="mailto:info@matrioskacreativa.it">info@matrioskacreativa.it</a></li>
       <li><a href="https://www.instagram.com/mka.collective/" target="_blank" rel="noopener">Instagram <span aria-hidden="true">&#8599;</span></a></li>
@@ -122,42 +122,10 @@
     </ul>
   </div>
 
-  <form class="form" id="callForm" novalidate>
-    <div class="row2">
-      <label class="field"><span>Nome e cognome *</span><input name="nome" autocomplete="name" required></label>
-      <label class="field"><span>Email *</span><input name="email" type="email" autocomplete="email" required></label>
-    </div>
-    <div class="row2">
-      <label class="field"><span>Azienda o progetto</span><input name="azienda" autocomplete="organization"></label>
-      <label class="field"><span>Giorno preferito per la call</span><input name="data" type="date"></label>
-    </div>
-
-    <fieldset class="chips">
-      <legend>Che cosa ti serve</legend>
-      <label><input type="checkbox" name="tipo" value="spot"><span>Spot o video</span></label>
-      <label><input type="checkbox" name="tipo" value="fashion"><span>Fashion film</span></label>
-      <label><input type="checkbox" name="tipo" value="shooting"><span>Shooting foto</span></label>
-      <label><input type="checkbox" name="tipo" value="doc"><span>Documentario</span></label>
-      <label><input type="checkbox" name="tipo" value="social"><span>Contenuti social</span></label>
-      <label><input type="checkbox" name="tipo" value="altro"><span>Altro</span></label>
-    </fieldset>
-
-    <fieldset class="chips">
-      <legend>Budget indicativo</legend>
-      <label><input type="radio" name="budget" value="5"><span>Fino a 5k</span></label>
-      <label><input type="radio" name="budget" value="15"><span>5-15k</span></label>
-      <label><input type="radio" name="budget" value="50"><span>15-50k</span></label>
-      <label><input type="radio" name="budget" value="50+"><span>Oltre 50k</span></label>
-      <label><input type="radio" name="budget" value="?"><span>Da capire</span></label>
-    </fieldset>
-
-    <label class="field"><span>Il progetto in due righe *</span><textarea name="messaggio" rows="4" required></textarea></label>
-
-    <div class="form-end">
-      <button class="btn btn-red" type="submit">Invia la richiesta</button>
-      <p class="form-msg" id="formMsg" role="status" aria-live="polite"></p>
-    </div>
-  </form>
+  <div class="cal-wrap">
+    <div class="cal-inline" id="calInline"></div>
+    <p class="cal-fallback">Il calendario non si vede? <a href="https://cal.com/mka-mxgoxl/30min" target="_blank" rel="noopener">Apri la pagina di prenotazione <span aria-hidden="true">&#8599;</span></a></p>
+  </div>
 </section>
 
 </main>

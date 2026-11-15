@@ -4,6 +4,7 @@ import { PROJECTS, SERVICES } from "./data.js";
 import { VIMEO, mountBackground, mountFull } from "./vimeo.js";
 import { createMosaic } from "./mosaic.js";
 import { playIntro } from "./intro.js";
+import { initCal } from "./cal.js";
 
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
@@ -272,22 +273,5 @@ addEventListener("pointermove", (e) => {
 addEventListener("scroll", () => { if (!check) check = requestAnimationFrame(recheck); }, { passive: true });
 document.documentElement.addEventListener("pointerleave", () => { mx = my = -1; setLit(null); });
 
-/* ═══ form: nessun backend nel prototipo ═══ */
-const form = $("#callForm");
-const msg = $("#formMsg");
-form.addEventListener("submit", (e) => {
-  e.preventDefault();
-  let ok = true;
-  $$("input[required], textarea[required]", form).forEach((f) => {
-    const bad = !f.value.trim() || (f.type === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.value));
-    f.closest(".field").classList.toggle("bad", bad);
-    if (bad && ok) { f.focus(); ok = false; }
-  });
-  if (!ok) { msg.textContent = "Mancano dei campi obbligatori"; return; }
-  msg.textContent = "Richiesta pronta. Nel prototipo non parte nessuna email.";
-  form.reset();
-});
-form.addEventListener("input", (e) => {
-  const f = e.target.closest(".field");
-  if (f) f.classList.remove("bad");
-});
+/* ═══ prenota una call: calendario Cal.com ═══ */
+initCal();

@@ -399,7 +399,12 @@ body.nav-on .corner { opacity: 1; }
   .sec-head { margin-bottom: 36px; }
   .work-grid { grid-template-columns: 1fr; gap: 28px; }
   .crew, .call { grid-template-columns: 1fr; }
-  .call-side { position: static; }
+  /* su telefono i contatti vanno sotto il calendario: la colonna si scioglie
+     e i suoi figli diventano righe della griglia di .call */
+  .call { row-gap: 0; }
+  .call-side { display: contents; }
+  .call .cal-wrap { margin-top: 36px; }
+  .call .call-links { order: 1; margin-top: 36px; }
   .crew-text { position: static; }
   .svc { grid-template-columns: 1fr; }
   .svc-text, .svc-items { grid-column: 1; }

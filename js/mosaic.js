@@ -14,7 +14,7 @@
 // telefoni sparivano).
 
 const S0 = 0.34;   // scala delle tessere a riposo
-const RAD = 10;    // raggio degli angoli delle tessere, px a schermo
+const RAD = 0;     // raggio degli angoli delle tessere, px a schermo (prova squadrata: era 10)
 
 // fasi, come frazioni di p
 export const PH = {

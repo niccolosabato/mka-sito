@@ -24,7 +24,6 @@ grid.innerHTML = PROJECTS.filter((p) => p.featured).map((p, i) => `
         <span class="card-n">${String(i + 1).padStart(2, "0")}</span>
         <h3 class="card-title">${p.title}</h3>
         <span class="card-client">${p.client}</span>
-        <span class="card-tag">${p.tag}</span>
       </div>
     </div>
   </a>`).join("");
@@ -33,7 +32,7 @@ grid.innerHTML = PROJECTS.filter((p) => p.featured).map((p, i) => `
 // diventa la cornice della pagina del progetto: vedi js/apri.js
 bindOpen(grid, "a.card", (a) => {
   const im = $(".card-media img.on", a) || $(".card-media img", a);
-  return { el: $(".card-media", a), src: im.getAttribute("src"), pos: im.style.objectPosition, radius: "14px" };
+  return { el: $(".card-media", a), src: im.getAttribute("src"), pos: im.style.objectPosition, radius: "0px" };
 });
 
 /* ═══ i nostri servizi: tre categorie una sotto l'altra, si aprono al clic ═══ */

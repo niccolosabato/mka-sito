@@ -4,7 +4,7 @@
    titoli. Il secondario resta Datatype. */
 
 :root {
-  --yellow: #F0E630;
+  --yellow: #DBD010;
   --cream: #F1EDE4;
   --white: #FFFFFF;
   --black: #000000;
@@ -79,7 +79,7 @@ button { font: inherit; color: inherit; }
 .btn:hover { transform: translateY(-2px); }
 .btn:active { transform: translateY(0) scale(.98); }
 .btn-yellow { background: var(--yellow); color: var(--black); }
-.btn-yellow:hover { background: #D9CF1F; }
+.btn-yellow:hover { background: #BEB50E; }
 .btn-cream { background: var(--cream); color: var(--black); }
 :focus-visible { outline: 2px solid var(--cream); outline-offset: 3px; }
 
@@ -104,7 +104,7 @@ button { font: inherit; color: inherit; }
   font-size: 14px; text-decoration: none;
   transition: background-color .3s;
 }
-.cta-top:hover { background: #D9CF1F; }
+.cta-top:hover { background: #BEB50E; }
 
 .corner {
   position: fixed; bottom: 47px; z-index: 55; font-size: 12px;
@@ -233,7 +233,7 @@ body.nav-on .corner { opacity: 1; }
 }
 .pill-sep { width: 1px; height: 28px; background: rgba(250, 250, 250, .14); }
 .pill a.pill-call { background: var(--yellow); color: var(--black); transition: color .3s, opacity .4s, background-color .3s; }
-@media (hover: hover) { .pill a.pill-call:hover { background: #D9CF1F; } }
+@media (hover: hover) { .pill a.pill-call:hover { background: #BEB50E; } }
 /* nella sezione della call la capsula chiara passa sopra il bottone giallo */
 .pill a.pill-call.is-lit { background: transparent; color: var(--ink); }
 @media (max-width: 560px) {

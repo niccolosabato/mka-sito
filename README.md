@@ -18,7 +18,7 @@ moduli JavaScript non partono aprendo il file direttamente.
    proporzioni dello schermo ridotti al 34% (su telefono in verticale sempre
    tre file a tutta altezza di riquadri 4:3): le file sono sfalsate di mezzo
    riquadro e scorrono piano di lato. Al centro il logo "moneta con acronimo
-   esteso" e sotto il bottone per prenotare una call.
+   esteso" e in basso l'invito a scorrere.
 2. **Roulette e showreel** (variante del branch `roulette`). Appena si
    comincia a scorrere parte un'animazione a tempo, poco più di un secondo,
    che non segue più lo scroll 1 a 1 (`ROLL_T` e `OPEN_T` in `js/main.js`:
@@ -28,7 +28,10 @@ moduli JavaScript non partono aprendo il file direttamente.
    showreel al centro. Le altre tessere si spengono e lo showreel si apre
    dalla sua tessera fino a tutto schermo. A quel punto compaiono le velature
    con il timecode e dal basso si apre la **pillola di navigazione**.
-   Tornando in cima l'animazione si riavvolge e tutto torna com'era.
+   Anche scorrendo veloce la pagina si ferma sullo showreel finché
+   l'animazione non è finita (la fermata parte solo da un gesto in cima, non
+   da link e pillola). Tornando in cima l'animazione si riavvolge e tutto
+   torna com'era.
 3. **Progetti.** Sei lavori su due colonne e tre righe, con titolo e cliente
    scritti dentro la miniatura. All'hover l'anteprima
    scorre i fermi immagine del lavoro, si accende un bordo giallo e compare l'etichetta "Guarda". In fondo
@@ -44,8 +47,8 @@ moduli JavaScript non partono aprendo il file direttamente.
    (account di MKA, evento `mka-mxgoxl/30min`): si scelgono giorno e ora e
    l'invito con il link della videochiamata arriva via email.
 
-L'invito alla call è sempre presente: nell'apertura, in alto a destra in ogni
-momento e come ultima voce della pillola.
+L'invito alla call è sempre presente: in alto a destra in ogni momento e come
+ultima voce della pillola.
 
 ## La pagina del progetto
 

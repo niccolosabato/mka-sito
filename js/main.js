@@ -163,11 +163,53 @@ function update(now = performance.now()) {
   }
 }
 
+/* ═══ fermata sullo showreel ═══ */
+// Dalla cima il primo gesto verso il basso (rotella, dito, tasti) porta
+// all'inizio del tratto bloccato e lì la pagina resta ferma finché
+// l'animazione non ha aperto lo showreel: anche scorrendo veloce non si va
+// oltre. Parte solo da un gesto, così link interni, pillola e il ripristino
+// dello scroll al ricaricamento passano senza fermarsi.
+const pinY = (q) => hero.getBoundingClientRect().top + scrollY + (hero.offsetHeight - stage.offsetHeight) * q;
+let locked = false, lockT = 0;
+const hold = () => scrollTo({ top: pinY(TRIG * 2), behavior: "instant" });
+function tryLock(e) {
+  if (reduced || locked || v > 0 || scrollY > pinY(TRIG) + 1) return;
+  locked = true;
+  lockT = performance.now();
+  e.preventDefault();
+  hold();
+}
+function unlockIfDone() {
+  if (locked && (v >= V_END || performance.now() - lockT > 3000)) locked = false;
+}
+let touchY = 0;
+addEventListener("wheel", (e) => {
+  if (locked) e.preventDefault();
+  else if (e.deltaY > 0) tryLock(e);
+}, { passive: false });
+addEventListener("touchstart", (e) => { touchY = e.touches[0].clientY; }, { passive: true });
+addEventListener("touchmove", (e) => {
+  if (locked) e.preventDefault();
+  else if (touchY - e.touches[0].clientY > 4) tryLock(e);
+}, { passive: false });
+const DOWN = ["ArrowDown", "PageDown", "End", " "], NAV = [...DOWN, "ArrowUp", "PageUp", "Home"];
+addEventListener("keydown", (e) => {
+  if (e.target.closest("input, textarea, select, [contenteditable]")) return;
+  if (locked && NAV.includes(e.key)) e.preventDefault();
+  else if (DOWN.includes(e.key) && !e.shiftKey) tryLock(e);
+});
+// l'inerzia del trackpad o del dito che continua: si torna al punto di fermata
+addEventListener("scroll", () => {
+  unlockIfDone();
+  if (locked && Math.abs(scrollY - pinY(TRIG * 2)) > 1) hold();
+}, { passive: true });
+
 // un solo ciclo: legge lo scroll e ridisegna il canvas, solo finché l'apertura si vede
 function loop(now) {
   if (heroVisible && !document.hidden) {
     mosaic.resize();
     update(now);
+    unlockIfDone();
     mosaic.draw(now);
   }
   requestAnimationFrame(loop);

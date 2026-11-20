@@ -2,7 +2,8 @@
 // variante "roulette".
 //
 // A riposo è una griglia dritta di tessere (proporzioni dello schermo, scala
-// S0), le file sfalsate di mezza tessera e in lento movimento orizzontale.
+// S0; su schermo verticale orizzontali in 16:9), le file sfalsate di mezza
+// tessera e in lento movimento orizzontale.
 // Scorrendo, le file girano come i rulli di una slot: partono velocissime
 // (con scia di movimento) e rallentano fino a fermarsi in griglia, con al
 // centro la tessera dello showreel. Poi le altre si spengono e lo showreel si
@@ -14,6 +15,10 @@
 // telefoni sparivano).
 
 const S0 = 0.34;   // scala delle tessere a riposo
+// su schermo verticale (telefono) le tessere restano orizzontali, in 16:9,
+// larghe questa frazione dello schermo: con le proporzioni dello schermo
+// sarebbero state strette e alte
+const PORTRAIT_W = 0.56;
 const RAD = 0;     // raggio degli angoli delle tessere, px a schermo (prova squadrata: era 10)
 
 // fasi, come frazioni di p
@@ -45,6 +50,7 @@ export function createMosaic(canvas, { tiles, stills, reduced }) {
 
   let W = 0, H = 0, dpr = 1, gap = 24, rows = 1;
   let p = 0;
+  let tw = 0, th = 0;          // misura delle tessere a riposo
   const prevOff = new Map();   // ultimo spostamento di ogni fila, per la scia
 
   function resize() {
@@ -57,8 +63,10 @@ export function createMosaic(canvas, { tiles, stills, reduced }) {
     canvas.width = Math.round(W * dpr);
     canvas.height = Math.round(H * dpr);
     gap = Math.max(10, Math.min(26, W * 0.018));
+    if (H > W) { tw = W * PORTRAIT_W; th = tw * 9 / 16; }
+    else { tw = W * S0; th = H * S0; }
     // file sopra e sotto quella centrale, quante bastano a coprire lo schermo
-    rows = Math.ceil((H / 2) / (H * S0 + gap)) + 1;
+    rows = Math.ceil((H / 2) / (th + gap)) + 1;
     prevOff.clear();
   }
 
@@ -79,7 +87,6 @@ export function createMosaic(canvas, { tiles, stills, reduced }) {
     ctx.fillRect(0, 0, W, H);
     ctx.imageSmoothingQuality = "medium";
 
-    const tw = W * S0, th = H * S0;
     const pw = tw + gap, ph = th + gap;
     const f = out4(clamp(p / PH.ROLL));
     const landed = p >= PH.ROLL;
@@ -140,8 +147,10 @@ export function createMosaic(canvas, { tiles, stills, reduced }) {
     ctx.fillRect(0, 0, W, H);
     ctx.globalAlpha = 1;
 
-    // lo showreel si apre dalla sua tessera a tutto schermo. Tessera e schermo
-    // hanno le stesse proporzioni: l'immagine cresce senza cambiare taglio
+    // lo showreel si apre dalla sua tessera a tutto schermo. Su schermo
+    // orizzontale tessera e schermo hanno le stesse proporzioni e l'immagine
+    // cresce senza cambiare taglio; su quello verticale la tessera 16:9 si
+    // allunga in altezza e il taglio si adatta mentre si apre
     const r = reelRect();
     ctx.save();
     ctx.beginPath();
@@ -154,7 +163,7 @@ export function createMosaic(canvas, { tiles, stills, reduced }) {
   // rettangolo dello showreel durante l'apertura, in px a schermo
   function reelRect() {
     const o = inOut(seg(p, PH.OPEN));
-    const w = lerp(W * S0, W, o), h = lerp(H * S0, H, o);
+    const w = lerp(tw, W, o), h = lerp(th, H, o);
     return { x: (W - w) / 2, y: (H - h) / 2, w, h, r: RAD * (1 - o), open: o };
   }
 

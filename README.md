@@ -20,8 +20,9 @@ moduli JavaScript non partono aprendo il file direttamente.
    riquadro e scorrono piano di lato. Al centro il logo "moneta con acronimo
    esteso" e sotto il bottone per prenotare una call.
 2. **Roulette e showreel** (variante del branch `roulette`). Appena si
-   comincia a scorrere parte un'animazione a tempo, di un secondo, che non
-   segue più lo scroll 1 a 1 (`DUR` in `js/main.js`): le file girano
+   comincia a scorrere parte un'animazione a tempo, poco più di un secondo,
+   che non segue più lo scroll 1 a 1 (`ROLL_T` e `OPEN_T` in `js/main.js`:
+   0,67 secondi di roulette e mezzo secondo di zoom): le file girano
    velocissime come i rulli di una slot, con una scia di
    movimento, e rallentano fino a fermarsi in griglia con la tessera dello
    showreel al centro. Le altre tessere si spengono e lo showreel si apre

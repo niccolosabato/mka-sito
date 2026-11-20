@@ -111,7 +111,8 @@ new IntersectionObserver(([e]) => { heroVisible = e.isIntersecting; }).observe(h
 // delle fasi PH di js/mosaic.js: roulette 0-0,40, apertura 0,40-0,60, poi
 // velature, comandi e pillola fino a V_END.
 const UI_P = PH.OPEN[1];
-const DUR = 1;          // secondi da 0 a UI_P (roulette + apertura)
+const ROLL_T = 0.67;    // secondi della roulette (0 → PH.ROLL)
+const OPEN_T = 0.5;     // secondi dello zoom dello showreel (PH.ROLL → UI_P)
 const V_END = 0.7;
 const TRIG = 0.01;      // frazione del tratto bloccato oltre la quale parte
 let v = 0;
@@ -128,7 +129,10 @@ function update(now = performance.now()) {
   const goal = p > TRIG ? V_END : 0;
   // fuori dall'apertura (pagina caricata più in basso) o con "riduci movimento" niente animazione
   if (reduced || !heroVisible) v = goal;
-  else v = goal > v ? Math.min(goal, v + dt * UI_P / DUR) : Math.max(goal, v - dt * UI_P / DUR);
+  else {
+    const rate = v < PH.ROLL ? PH.ROLL / ROLL_T : (UI_P - PH.ROLL) / OPEN_T;
+    v = goal > v ? Math.min(goal, v + dt * rate) : Math.max(goal, v - dt * rate);
+  }
   mosaic.set(v);
 
   // il player Vimeo, quando ci sarà, segue il rettangolo dello showreel

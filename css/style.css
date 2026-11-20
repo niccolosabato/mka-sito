@@ -150,7 +150,10 @@ body.nav-on .corner { opacity: 1; }
   pointer-events: none;
 }
 .hero-front a { pointer-events: auto; }
-.hero-logo { position: relative; margin: 0; width: min(78vw, 980px); }
+/* --logo-w: larghezza del logo; il logo sta da solo al centro dello schermo,
+   il sottotitolo è fuori dal flusso subito sotto (altezza del logo = 346/1010 della larghezza) */
+.hero-front { --logo-w: min(68vw, 850px); }
+.hero-logo { position: relative; margin: 0; width: var(--logo-w); }
 .hero-logo img { filter: drop-shadow(0 6px 30px rgba(0,0,0,.35)); }
 .hero-letters { width: 100%; height: auto; }
 /* la moneta è il pittogramma intero di branding.pdf (logo/moneta-crema.svg):
@@ -166,7 +169,10 @@ body.nav-on .corner { opacity: 1; }
    Con .intro sull'html tutto il resto è nascosto, il fondo resta nero. */
 .intro .mosaic, .intro .hero-shade, .intro .top, .intro .hero-line,
 .intro .hero-bottom, .intro .hero-letters, .intro .hero-coin { opacity: 0; }
-.hero-line { margin: 22px 0 0; font-size: clamp(15px, 1.4vw, 19px); }
+.hero-line {
+  position: absolute; left: 0; right: 0; top: calc(50% + var(--logo-w) * 346 / 1010 / 2 + 22px);
+  margin: 0; text-align: center; font-size: clamp(15px, 1.4vw, 19px);
+}
 .hero-bottom {
   position: absolute; left: 0; right: 0; bottom: calc(var(--ui, 0px) + max(32px, env(safe-area-inset-bottom)));
   display: flex; flex-direction: column; align-items: center; gap: 14px;
@@ -423,6 +429,7 @@ body.nav-on .corner { opacity: 1; }
 
 /* ─── telefono ─── */
 @media (max-width: 860px) {
+  .hero-front { --logo-w: 74vw; }
   /* sul telefono spazi fissi e stretti tra le sezioni: in vh diventavano bande nere enormi */
   .work { padding: 80px var(--pad) 60px; }
   .crew, .call { padding: 60px var(--pad); gap: 32px; }

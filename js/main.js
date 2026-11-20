@@ -5,6 +5,7 @@ import { VIMEO, mountBackground, mountFull } from "./vimeo.js";
 import { createMosaic, PH } from "./mosaic.js";
 import { playIntro } from "./intro.js";
 import { initCal } from "./cal.js";
+import { bindOpen } from "./apri.js";
 
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
@@ -16,7 +17,7 @@ const img = (name) => `img/${name}.jpg`;
 /* ═══ progetti ═══ */
 const grid = $("#workGrid");
 grid.innerHTML = PROJECTS.filter((p) => p.featured).map((p, i) => `
-  <a class="card reveal" href="${p.url}" target="_blank" rel="noopener">
+  <a class="card reveal" href="progetto.html?p=${p.slug}">
     <div class="card-media">
       ${p.imgs.map((n, k) => `<img src="${img(n)}" alt="" loading="lazy" class="${k ? "" : "on"}" style="object-position:${p.pos || "50% 50%"}">`).join("")}
       <div class="card-meta">
@@ -28,14 +29,44 @@ grid.innerHTML = PROJECTS.filter((p) => p.featured).map((p, i) => `
     </div>
   </a>`).join("");
 
-/* ═══ i nostri servizi: i tre blocchi ═══ */
-$("#services").innerHTML = SERVICES.map((sv, i) => `
+// al clic la miniatura (con il fermo immagine che si vede in quel momento)
+// diventa la cornice della pagina del progetto: vedi js/apri.js
+bindOpen(grid, "a.card", (a) => {
+  const im = $(".card-media img.on", a) || $(".card-media img", a);
+  return { el: $(".card-media", a), src: im.getAttribute("src"), pos: im.style.objectPosition, radius: "14px" };
+});
+
+/* ═══ i nostri servizi: tre categorie una sotto l'altra, si aprono al clic ═══ */
+// schema a fisarmonica accessibile: il bottone sta dentro il titolo e dice
+// con aria-expanded se il pannello è aperto. Se ne apre uno alla volta.
+const services = $("#services");
+services.innerHTML = SERVICES.map((sv, i) => `
   <article class="svc reveal">
-    <span class="svc-n">${String(i + 1).padStart(2, "0")}</span>
-    <h3 class="svc-title">${sv.title}</h3>
-    <p class="svc-text">${sv.text}</p>
-    <ul class="svc-items">${sv.items.map((t) => `<li>${t}</li>`).join("")}</ul>
+    <h3 class="svc-h">
+      <button class="svc-head" type="button" id="svc-h${i}" aria-expanded="false" aria-controls="svc-b${i}">
+        <span class="svc-n">${String(i + 1).padStart(2, "0")}</span>
+        <span class="svc-title">${sv.title}</span>
+        <span class="svc-plus" aria-hidden="true"></span>
+      </button>
+    </h3>
+    <div class="svc-body" id="svc-b${i}" role="region" aria-labelledby="svc-h${i}" inert>
+      <div class="svc-inner">
+        <p class="svc-text">${sv.text}</p>
+        <ul class="svc-items">${sv.items.map((t) => `<li>${t}</li>`).join("")}</ul>
+      </div>
+    </div>
   </article>`).join("");
+services.addEventListener("click", (e) => {
+  const btn = e.target.closest(".svc-head");
+  if (!btn) return;
+  const open = btn.getAttribute("aria-expanded") !== "true";
+  $$(".svc", services).forEach((svc) => {
+    const on = open && svc.contains(btn);
+    svc.classList.toggle("open", on);
+    $(".svc-head", svc).setAttribute("aria-expanded", String(on));
+    $(".svc-body", svc).inert = !on;
+  });
+});
 
 /* ═══ apertura ═══ */
 playIntro();

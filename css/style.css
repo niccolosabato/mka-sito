@@ -311,31 +311,67 @@ body.nav-on .corner { opacity: 1; }
 .cur.on { transform: translate(16px, 18px) scale(1); }
 @media (hover: none), (pointer: coarse) { .cur { display: none; } }
 
-/* ─── i nostri servizi ─── */
+/* ─── apertura di un progetto (js/apri.js e js/progetto.js) ───
+   la miniatura che vola fino alla cornice, il nero che copre il resto e le
+   staffe agli angoli, come su donprod.uk */
+.leave-veil { position: fixed; inset: 0; z-index: 84; background: var(--black); pointer-events: none; }
+.fly { position: fixed; z-index: 85; pointer-events: none; }
+.fly > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
+.fly .pj-guide { transform: scaleX(0); }
+.br { position: absolute; z-index: 3; width: 20px; height: 20px; border: 0 solid var(--cream); pointer-events: none; transition: border-color .4s; }
+.br-tl { top: -7px; left: -7px; border-top-width: 1.5px; border-left-width: 1.5px; }
+.br-tr { top: -7px; right: -7px; border-top-width: 1.5px; border-right-width: 1.5px; }
+.br-bl { bottom: -7px; left: -7px; border-bottom-width: 1.5px; border-left-width: 1.5px; }
+.br-br { bottom: -7px; right: -7px; border-bottom-width: 1.5px; border-right-width: 1.5px; }
+
+/* ─── i nostri servizi: una colonna, titolo su una riga, categorie a fisarmonica ─── */
 .crew {
   position: relative; z-index: 2;
   background: var(--black); color: var(--cream);
-  display: grid; grid-template-columns: minmax(300px, 5fr) 7fr; gap: 40px;
   padding: 12vh var(--pad) 12vh;
 }
-.crew-text { align-self: start; position: sticky; top: 110px; }
-.crew .sec-title { font-size: clamp(64px, 9vw, 160px); }
-.crew-lead { margin: 34px 0 0; font-size: clamp(22px, 2.3vw, 34px); line-height: 1.15; letter-spacing: -.02em; font-weight: 500; max-width: 18em; }
-.crew-body { margin: 18px 0 0; font-size: 17px; max-width: 30em; }
-.services { display: grid; gap: 16px; align-content: start; }
+.crew .sec-title { font-size: clamp(36px, 10.4vw, 190px); white-space: nowrap; }
+/* i due testi del manifesto affiancati sotto il titolo */
+.crew-intro { display: grid; grid-template-columns: 1fr 1fr; gap: 24px 40px; margin-top: clamp(28px, 4vw, 56px); }
+.crew-lead { margin: 0; font-size: clamp(22px, 2.3vw, 34px); line-height: 1.15; letter-spacing: -.02em; font-weight: 500; max-width: 18em; }
+.crew-body { margin: 0; font-size: 17px; max-width: 30em; align-self: end; }
+.services { display: grid; gap: 16px; margin-top: clamp(40px, 6vw, 88px); }
 .svc {
-  display: grid; grid-template-columns: auto 1fr; gap: 14px 24px;
-  padding: clamp(22px, 2.6vw, 40px);
   border-radius: 14px;
   /* bordo con box-shadow come le card dei progetti: al passaggio diventa giallo da 4px */
   box-shadow: inset 0 0 0 1px rgba(241,237,228,.18);
   transition: box-shadow .4s var(--ease);
 }
 .svc.is-on { box-shadow: inset 0 0 0 4px var(--yellow); }
-.svc-n { font-family: var(--f-mono); font-stretch: 80%; font-size: 13px; padding-top: .5em; }
-.svc-title { margin: 0; font-weight: 500; font-size: clamp(26px, 2.8vw, 44px); line-height: 1.05; letter-spacing: -.03em; }
-.svc-text { grid-column: 2; margin: 0; font-size: 17px; max-width: 34em; }
-.svc-items { grid-column: 2; list-style: none; padding: 0; margin: 6px 0 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.svc-h { margin: 0; font-weight: 500; }
+.svc-head {
+  width: 100%; display: grid; grid-template-columns: 56px 1fr auto; align-items: center; gap: 16px;
+  padding: clamp(22px, 2.6vw, 40px); background: none; border: 0; border-radius: inherit;
+  text-align: left; cursor: pointer;
+}
+.svc-n { font-family: var(--f-mono); font-stretch: 80%; font-size: 13px; font-weight: 400; }
+.svc-title { font-weight: 500; font-size: clamp(26px, 3.4vw, 56px); line-height: 1.05; letter-spacing: -.03em; }
+/* più che diventa meno (e giallo): la stanghetta verticale si chiude ruotando */
+.svc-plus { position: relative; width: 26px; height: 26px; }
+.svc-plus::before, .svc-plus::after {
+  content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 2px; margin-top: -1px;
+  background: var(--cream); transition: transform .5s var(--ease), background-color .3s;
+}
+.svc-plus::after { transform: rotate(90deg); }
+.svc.open .svc-plus::after { transform: rotate(0deg); }
+.svc.open .svc-plus::before, .svc.open .svc-plus::after { background: var(--yellow); }
+/* apertura con grid-template-rows da 0fr a 1fr: segue l'altezza vera del contenuto */
+.svc-body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .6s var(--ease); }
+.svc.open .svc-body { grid-template-rows: 1fr; }
+.svc-inner {
+  min-height: 0; overflow: hidden;
+  display: grid; gap: 14px; align-content: start;
+  padding: 0 clamp(22px, 2.6vw, 40px) 0 calc(clamp(22px, 2.6vw, 40px) + 72px);
+  transition: padding-bottom .6s var(--ease);
+}
+.svc.open .svc-inner { padding-bottom: clamp(22px, 2.6vw, 40px); }
+.svc-text { margin: 0; font-size: 17px; max-width: 40em; }
+.svc-items { list-style: none; padding: 0; margin: 6px 0 0; display: flex; flex-wrap: wrap; gap: 8px; }
 .svc-items li {
   font-family: var(--f-mono); font-stretch: 80%; text-transform: uppercase; letter-spacing: .04em; font-size: 13px;
   padding: 6px 12px; border: 1px solid rgba(241,237,228,.35); border-radius: 99px;
@@ -405,9 +441,10 @@ body.nav-on .corner { opacity: 1; }
   .call-side { display: contents; }
   .call .cal-wrap { margin-top: 36px; }
   .call .call-links { order: 1; margin-top: 36px; }
-  .crew-text { position: static; }
-  .svc { grid-template-columns: 1fr; }
-  .svc-text, .svc-items { grid-column: 1; }
+  .crew-intro { grid-template-columns: 1fr; }
+  .svc-head { grid-template-columns: 32px 1fr auto; gap: 12px; }
+  .svc-plus { width: 20px; height: 20px; }
+  .svc-inner { padding-left: clamp(22px, 2.6vw, 40px); }
   .sec-head { grid-template-columns: 1fr; gap: 20px; }
   .link-all { justify-self: start; }
   .brand-sub { display: none; }

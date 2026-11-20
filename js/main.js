@@ -33,7 +33,7 @@ grid.innerHTML = PROJECTS.filter((p) => p.featured).map((p, i) => `
 // diventa la cornice della pagina del progetto: vedi js/apri.js
 bindOpen(grid, "a.card", (a) => {
   const im = $(".card-media img.on", a) || $(".card-media img", a);
-  return { el: $(".card-media", a), src: im.getAttribute("src"), pos: im.style.objectPosition, radius: "14px" };
+  return { el: $(".card-media", a), src: im.getAttribute("src"), pos: im.style.objectPosition, radius: "0px" };
 });
 
 /* ═══ i nostri servizi: tre categorie una sotto l'altra, si aprono al clic ═══ */

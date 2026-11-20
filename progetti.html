@@ -30,7 +30,7 @@
   .rows .m { font-family: var(--f-mono); font-stretch: 80%; font-size: 14px; text-transform: uppercase; letter-spacing: .04em; }
   .rows .ar { justify-self: end; }
   .peek {
-    position: fixed; left: 0; top: 0; z-index: 40; width: 300px; aspect-ratio: 4 / 3; border-radius: 12px; overflow: hidden;
+    position: fixed; left: 0; top: 0; z-index: 40; width: 300px; aspect-ratio: 4 / 3; border-radius: 0; overflow: hidden;
     pointer-events: none; opacity: 0; transform: translate(-50%, -50%) scale(.9); transition: opacity .3s, transform .45s var(--ease);
   }
   .peek.on { opacity: 1; transform: translate(-50%, -50%) scale(1); }
@@ -89,7 +89,7 @@
   // Senza anteprima (telefono) la cornice si apre dal centro.
   bindOpen(rows, "a", (a) => ({
     el: peek.classList.contains("on") ? peek : null,
-    src: a.dataset.img, pos: a.dataset.pos, radius: "12px",
+    src: a.dataset.img, pos: a.dataset.pos, radius: "0px",
   }));
   rows.querySelectorAll("a").forEach((a) => {
     // anteprima solo con il mouse: al tocco comparirebbe e resterebbe lì

@@ -61,6 +61,9 @@ function mount() {
         "cal-bg": "#000000", "cal-bg-muted": "#000000", "cal-bg-subtle": "#141414", "cal-bg-emphasis": "#1f1f1f",
         "cal-text": "#F1EDE4", "cal-text-emphasis": "#F1EDE4",
         "cal-border": "#3a3a3a", "cal-border-subtle": "#262626", "cal-border-booker": "#262626",
+        // prova squadrata: angoli dritti anche nel calendario
+        "cal-radius": "0px", "cal-radius-sm": "0px", "cal-radius-md": "0px", "cal-radius-lg": "0px",
+        "cal-radius-xl": "0px", "cal-radius-2xl": "0px", "cal-radius-full": "0px",
       },
     },
   });

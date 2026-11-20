@@ -4,7 +4,7 @@
    titoli. Il secondario resta Datatype. */
 
 :root {
-  --red: #A93F33;
+  --yellow: #F0E630;
   --cream: #F1EDE4;
   --white: #FFFFFF;
   --black: #000000;
@@ -43,9 +43,9 @@ body {
 img { display: block; max-width: 100%; }
 a { color: inherit; }
 button { font: inherit; color: inherit; }
-::selection { background: var(--red); color: var(--cream); }
+::selection { background: var(--yellow); color: var(--black); }
 
-.skip { position: fixed; left: 12px; top: -60px; z-index: 100; background: var(--red); color: var(--cream); padding: 8px 12px; border-radius: 99px; }
+.skip { position: fixed; left: 12px; top: -60px; z-index: 100; background: var(--yellow); color: var(--black); padding: 8px 12px; border-radius: 99px; }
 .skip:focus { top: 12px; }
 
 .label, .hint, .reel-note, .band, .corner, .tc {
@@ -78,8 +78,8 @@ button { font: inherit; color: inherit; }
 }
 .btn:hover { transform: translateY(-2px); }
 .btn:active { transform: translateY(0) scale(.98); }
-.btn-red { background: var(--red); color: var(--cream); }
-.btn-red:hover { background: #bb4a3d; }
+.btn-yellow { background: var(--yellow); color: var(--black); }
+.btn-yellow:hover { background: #D9CF1F; }
 .btn-cream { background: var(--cream); color: var(--black); }
 :focus-visible { outline: 2px solid var(--cream); outline-offset: 3px; }
 
@@ -100,11 +100,11 @@ button { font: inherit; color: inherit; }
 .brand-sub { font-size: 11px; text-transform: uppercase; }
 .cta-top {
   height: 34px; display: inline-flex; align-items: center; padding: 0 14px;
-  border-radius: 99px; background: var(--red); color: var(--cream);
+  border-radius: 99px; background: var(--yellow); color: var(--black);
   font-size: 14px; text-decoration: none;
   transition: background-color .3s;
 }
-.cta-top:hover { background: #bb4a3d; }
+.cta-top:hover { background: #D9CF1F; }
 
 .corner {
   position: fixed; bottom: 47px; z-index: 55; font-size: 12px;
@@ -117,7 +117,7 @@ body.nav-on .corner { opacity: 1; }
 @media (max-width: 900px) { .corner { display: none; } }
 
 /* ═══ APERTURA ═══ */
-.hero { position: relative; height: calc(var(--th) * 2.3); }
+.hero { position: relative; height: calc(var(--th) * 2.8); }
 .hero-stage {
   position: sticky; top: 0; height: var(--th); overflow: hidden;
   background: var(--black);
@@ -226,9 +226,9 @@ body.nav-on .corner { opacity: 1; }
   transition: left .45s var(--ease), width .45s var(--ease), opacity .3s;
 }
 .pill-sep { width: 1px; height: 28px; background: rgba(250, 250, 250, .14); }
-.pill a.pill-call { background: var(--red); color: var(--cream); transition: color .3s, opacity .4s, background-color .3s; }
-@media (hover: hover) { .pill a.pill-call:hover { background: #bb4a3d; } }
-/* nella sezione della call la capsula chiara passa sopra il bottone rosso */
+.pill a.pill-call { background: var(--yellow); color: var(--black); transition: color .3s, opacity .4s, background-color .3s; }
+@media (hover: hover) { .pill a.pill-call:hover { background: #D9CF1F; } }
+/* nella sezione della call la capsula chiara passa sopra il bottone giallo */
 .pill a.pill-call.is-lit { background: transparent; color: var(--ink); }
 @media (max-width: 560px) {
   .pill a { padding: 8px 10px; font-size: 13px; }
@@ -280,12 +280,12 @@ body.nav-on .corner { opacity: 1; }
   content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
   background: linear-gradient(transparent 45%, rgba(0,0,0,.75));
 }
-/* bordo rosso del branding al passaggio del mouse, sopra a tutto */
+/* bordo giallo del branding al passaggio del mouse, sopra a tutto */
 .card-media::after {
   content: ""; position: absolute; inset: 0; z-index: 3; border-radius: inherit; pointer-events: none;
-  box-shadow: inset 0 0 0 0 var(--red); transition: box-shadow .4s var(--ease);
+  box-shadow: inset 0 0 0 0 var(--yellow); transition: box-shadow .4s var(--ease);
 }
-.card.is-on .card-media::after, .card:focus-visible .card-media::after { box-shadow: inset 0 0 0 4px var(--red); }
+.card.is-on .card-media::after, .card:focus-visible .card-media::after { box-shadow: inset 0 0 0 4px var(--yellow); }
 .card-meta {
   position: absolute; left: 0; right: 0; bottom: 0; z-index: 2;
   display: grid; grid-template-columns: auto 1fr auto; gap: 4px 16px; align-items: baseline;
@@ -298,7 +298,7 @@ body.nav-on .corner { opacity: 1; }
 .card-tag {
   grid-column: 3; grid-row: 1; justify-self: end;
   font-family: var(--f-mono); font-stretch: 80%; font-size: 12px; text-transform: uppercase; letter-spacing: .04em;
-  padding: 4px 9px; border-radius: 99px; background: var(--red); color: var(--cream);
+  padding: 4px 9px; border-radius: 99px; background: var(--yellow); color: var(--black);
 }
 
 /* etichetta che segue il puntatore sopra le card, accanto alla freccia (che resta visibile) */
@@ -327,11 +327,11 @@ body.nav-on .corner { opacity: 1; }
   display: grid; grid-template-columns: auto 1fr; gap: 14px 24px;
   padding: clamp(22px, 2.6vw, 40px);
   border-radius: 14px;
-  /* bordo con box-shadow come le card dei progetti: al passaggio diventa rosso da 4px */
+  /* bordo con box-shadow come le card dei progetti: al passaggio diventa giallo da 4px */
   box-shadow: inset 0 0 0 1px rgba(241,237,228,.18);
   transition: box-shadow .4s var(--ease);
 }
-.svc.is-on { box-shadow: inset 0 0 0 4px var(--red); }
+.svc.is-on { box-shadow: inset 0 0 0 4px var(--yellow); }
 .svc-n { font-family: var(--f-mono); font-stretch: 80%; font-size: 13px; padding-top: .5em; }
 .svc-title { margin: 0; font-weight: 500; font-size: clamp(26px, 2.8vw, 44px); line-height: 1.05; letter-spacing: -.03em; }
 .svc-text { grid-column: 2; margin: 0; font-size: 17px; max-width: 34em; }

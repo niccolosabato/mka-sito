@@ -1,26 +1,33 @@
-// Il mosaico dell'apertura disegnato su un <canvas> grande quanto lo schermo.
+// Il mosaico dell'apertura disegnato su un <canvas> grande quanto lo schermo,
+// variante "roulette".
 //
-// Prima era una griglia DOM di tessere grandi come lo schermo, scalata e
-// ruotata in blocco: un livello da 9 schermi che sui telefoni il browser non
-// riesce a tenere in memoria (a metà scroll il mosaico spariva nel nero). Il
-// canvas invece è sempre grande quanto lo schermo, qualunque sia la scala.
+// A riposo è una griglia dritta di tessere (proporzioni dello schermo, scala
+// S0), le file sfalsate di mezza tessera e in lento movimento orizzontale.
+// Scorrendo, le file girano come i rulli di una slot: partono velocissime
+// (con scia di movimento) e rallentano fino a fermarsi in griglia, con al
+// centro la tessera dello showreel. Poi le altre si spengono e lo showreel si
+// apre dalla sua tessera fino a tutto schermo.
 //
-// La geometria è quella di recordstudio.it: tessere grandi quanto lo schermo,
-// a riposo scala 0,4 e rotazione -30°, colonne sfalsate in verticale. Il numero
-// di colonne e righe si calcola in modo che lo schermo ruotato sia sempre
-// coperto: niente angoli neri, nemmeno su un telefono in verticale.
+// Tutto è funzione di p (0..1 sul tratto bloccato, vedi js/main.js): si può
+// tornare indietro in ogni momento. Resta un canvas grande quanto lo schermo
+// per lo stesso motivo del prototipo principale (le griglie DOM giganti sui
+// telefoni sparivano).
 
-const S0 = 0.4;              // scala a riposo
-const R0 = -30 * Math.PI / 180;
-const RAD0 = 28;             // raggio degli angoli delle tessere (px a scala 1)
+const S0 = 0.34;   // scala delle tessere a riposo
+const RAD = 10;    // raggio degli angoli delle tessere, px a schermo
 
-// sfalsamento verticale delle colonne, in frazioni di altezza della tessera.
-// La colonna centrale non si sposta: la sua tessera centrale è lo showreel.
-const OFF_R = [0.29, -0.21, 0.33, -0.17, 0.24];
-const OFF_L = [-0.34, 0.25, -0.19, 0.3, -0.23];
-const colOff = (d) => (d === 0 ? 0 : d > 0 ? OFF_R[(d - 1) % 5] : OFF_L[(-d - 1) % 5]);
+// fasi, come frazioni di p
+export const PH = {
+  ROLL: 0.40,                 // 0 → ROLL: la roulette gira e si ferma
+  FADE: [0.40, 0.50],         // le altre tessere si spengono
+  OPEN: [0.40, 0.60],         // lo showreel si apre a tutto schermo
+};
 
-const odd = (n) => (n % 2 ? n : n + 1);
+const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const seg = (p, [a, b]) => clamp((p - a) / (b - a));
+const lerp = (a, b, t) => a + (b - a) * t;
+const inOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+const out4 = (t) => 1 - Math.pow(1 - t, 4); // come una ruota che rallenta
 
 export function createMosaic(canvas, { tiles, stills, reduced }) {
   const ctx = canvas.getContext("2d", { alpha: false });
@@ -34,9 +41,11 @@ export function createMosaic(canvas, { tiles, stills, reduced }) {
   };
   const tileImgs = tiles.map(load);
   const stillImgs = stills.map(load);
+  const L = tileImgs.length;
 
-  let W = 0, H = 0, dpr = 1, C = 3, R = 3, gap = 60;
-  let state = { s: S0, r: R0, k: 1, rad: RAD0 };
+  let W = 0, H = 0, dpr = 1, gap = 24, rows = 1;
+  let p = 0;
+  const prevOff = new Map();   // ultimo spostamento di ogni fila, per la scia
 
   function resize() {
     const w = canvas.clientWidth, h = canvas.clientHeight;
@@ -47,98 +56,132 @@ export function createMosaic(canvas, { tiles, stills, reduced }) {
     W = w; H = h; dpr = d;
     canvas.width = Math.round(W * dpr);
     canvas.height = Math.round(H * dpr);
-    gap = Math.max(16, Math.min(60, W * 0.04));
-    // quanto deve essere grande la griglia, nel suo riferimento ruotato, per
-    // coprire lo schermo: proiezione dello schermo sugli assi ruotati
-    const cs = Math.abs(Math.cos(R0)), sn = Math.abs(Math.sin(R0));
-    const needW = W * cs + H * sn, needH = W * sn + H * cs;
-    C = odd(Math.ceil(needW / (S0 * (W + gap))) + 1);
-    R = odd(Math.ceil(needH / (S0 * (H + gap))) + 2); // +2 per lo sfalsamento
+    gap = Math.max(10, Math.min(26, W * 0.018));
+    // file sopra e sotto quella centrale, quante bastano a coprire lo schermo
+    rows = Math.ceil((H / 2) / (H * S0 + gap)) + 1;
+    prevOff.clear();
   }
 
-  // disegna un'immagine "a copertura" (come object-fit: cover) nel rettangolo
-  function cover(o, x, y, w, h, zoom, alpha) {
+  // immagine "a copertura" (come object-fit: cover) nel rettangolo
+  function cover(o, x, y, w, h, zoom = 1) {
     if (!o.ok) return;
     const iw = o.im.naturalWidth, ih = o.im.naturalHeight;
     const sc = Math.max(w / iw, h / ih) * zoom;
     const sw = w / sc, sh = h / sc;
     const sx = (iw - sw) * o.pos[0], sy = (ih - sh) * o.pos[1];
-    ctx.globalAlpha = alpha;
     ctx.drawImage(o.im, sx, sy, sw, sh, x, y, w, h);
-    ctx.globalAlpha = 1;
   }
 
   function draw(now) {
-    const { s, r, k, rad } = state;
     const t = now / 1000;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.fillStyle = "#000";
     ctx.fillRect(0, 0, W, H);
     ctx.imageSmoothingQuality = "medium";
 
-    ctx.translate(W / 2, H / 2);
-    ctx.rotate(r);
-    ctx.scale(s, s);
+    const tw = W * S0, th = H * S0;
+    const pw = tw + gap, ph = th + gap;
+    const f = out4(clamp(p / PH.ROLL));
+    const landed = p >= PH.ROLL;
+    const small = W < 700;
 
-    const cc = (C - 1) / 2, rc = (R - 1) / 2;
-    const reach = Math.hypot(W, H) / 2;          // metà diagonale dello schermo
-    const tileR = Math.hypot(W, H) / 2 * s;      // metà diagonale di una tessera a schermo
-    const cosr = Math.cos(r), sinr = Math.sin(r);
+    for (let d = -rows; d <= rows; d++) {
+      const y = H / 2 + d * ph - th / 2;
+      if (y > H || y + th < 0) continue;
+      const ad = Math.abs(d);
+      // la fila centrale va a sinistra, le altre alternano verso
+      const dir = d === 0 ? -1 : ad % 2 ? 1 : -1;
+      const N = reduced ? (d === 0 ? 3 : 2) : d === 0 ? 26 : 14 + 5 * ad;
+      // a riposo le file scorrono piano, sfalsate di mezza tessera; la deriva
+      // si avvolge su L tessere, così le immagini non saltano
+      const idle = reduced ? 0 : dir * ((t * pw * 0.035) % (L * pw)) + (ad % 2) * 0.5 * pw;
+      const off = lerp(idle, dir * N * pw, f);
 
-    for (let c = 0; c < C; c++) {
-      const d = c - cc;
-      const lx = d * (W + gap);
-      const oy = colOff(d) * H * k;
-      for (let j = 0; j < R; j++) {
-        const ly = (j - rc) * (H + gap) + oy;
-        // scarta le tessere fuori schermo prima di disegnarle
-        const px = (lx * cosr - ly * sinr) * s, py = (lx * sinr + ly * cosr) * s;
-        if (Math.hypot(px, py) - tileR > reach) continue;
+      // scia: quanto si è spostata la fila dall'ultimo fotogramma
+      const last = prevOff.get(d);
+      prevOff.set(d, off);
+      const delta = last === undefined || reduced ? 0 : off - last;
+      const spread = Math.min(Math.abs(delta), pw * 0.9);
+      const n = spread < 3 ? 1 : clamp(Math.ceil(spread / (small ? 30 : 16)), 2, small ? 5 : 8);
+      const back = -Math.sign(delta) * spread; // le copie restano indietro rispetto al moto
 
-        const x = lx - W / 2, y = ly - H / 2;
+      const lo = Math.ceil((-W / 2 - tw / 2 - spread - off) / pw);
+      const hi = Math.floor((W / 2 + tw / 2 + spread - off) / pw);
+      for (let i = lo; i <= hi; i++) {
+        // la tessera N della fila centrale è lo showreel: è lei che si ferma al centro
+        const isReel = d === 0 && i === N;
+        if (isReel && landed) continue; // da qui la disegna la fase di apertura
+        const x = W / 2 + i * pw + off - tw / 2;
+        const x0 = Math.min(x, x + back), x1 = Math.max(x, x + back) + tw;
         ctx.save();
         ctx.beginPath();
-        if (rad > 0.5 && ctx.roundRect) ctx.roundRect(x, y, W, H, rad);
-        else ctx.rect(x, y, W, H);
+        if (ctx.roundRect) ctx.roundRect(x0, y, x1 - x0, th, RAD); else ctx.rect(x0, y, x1 - x0, th);
         ctx.clip();
         ctx.fillStyle = "#111";
-        ctx.fillRect(x, y, W, H);
-
-        if (d === 0 && j === rc) {
-          drawReel(x, y, t);
-        } else {
-          // ogni tessera "respira" piano, come un video in loop
-          const ph = (c * 7 + j * 3) % 11;
-          const zoom = reduced ? 1.04 : 1.07 + 0.05 * Math.sin(t / 2.6 + ph);
-          cover(tileImgs[(c * 5 + j * 3) % tileImgs.length], x, y, W, H, zoom, 1);
+        ctx.fillRect(x0, y, x1 - x0, th);
+        const im = tileImgs[(((i * 3 + d * 7) % L) + L) % L];
+        const zoom = reduced ? 1.04 : 1.06 + 0.03 * Math.sin(t / 2.6 + i + d * 2);
+        for (let k = 0; k < n; k++) {
+          ctx.globalAlpha = 1 / (k + 1);  // media mobile delle copie
+          const xk = x + (n > 1 ? (back * k) / (n - 1) : 0);
+          if (isReel) drawReel(xk, y, tw, th, t);
+          else cover(im, xk, y, tw, th, zoom);
         }
+        ctx.globalAlpha = 1;
         ctx.restore();
       }
     }
+
+    if (!landed) return;
+
+    // le altre tessere si spengono nel nero
+    ctx.globalAlpha = seg(p, PH.FADE);
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0, 0, W, H);
+    ctx.globalAlpha = 1;
+
+    // lo showreel si apre dalla sua tessera a tutto schermo. Tessera e schermo
+    // hanno le stesse proporzioni: l'immagine cresce senza cambiare taglio
+    const r = reelRect();
+    ctx.save();
+    ctx.beginPath();
+    if (ctx.roundRect && r.r > 0.5) ctx.roundRect(r.x, r.y, r.w, r.h, r.r); else ctx.rect(r.x, r.y, r.w, r.h);
+    ctx.clip();
+    drawReel(r.x, r.y, r.w, r.h, t);
+    ctx.restore();
+  }
+
+  // rettangolo dello showreel durante l'apertura, in px a schermo
+  function reelRect() {
+    const o = inOut(seg(p, PH.OPEN));
+    const w = lerp(W * S0, W, o), h = lerp(H * S0, H, o);
+    return { x: (W - w) / 2, y: (H - h) / 2, w, h, r: RAD * (1 - o), open: o };
   }
 
   // showreel provvisorio: fermi immagine a dissolvenza con zoom lento
   const HOLD = reduced ? 5 : 3.2, FADE = 1;
-  function drawReel(x, y, t) {
+  function drawReel(x, y, w, h, t) {
     if (!stillImgs.length) return;
     const cyc = t / HOLD;
     const i = Math.floor(cyc) % stillImgs.length;
-    const f = cyc - Math.floor(cyc);
+    const fr = cyc - Math.floor(cyc);
     const zoomOf = (u) => (reduced ? 1.04 : 1.04 + 0.1 * u);
     // l'immagine uscente resta sotto mentre la nuova entra
-    const into = Math.min(1, (f * HOLD) / FADE);
+    const into = Math.min(1, (fr * HOLD) / FADE);
     if (into < 1) {
       const prev = (i - 1 + stillImgs.length) % stillImgs.length;
-      cover(stillImgs[prev], x, y, W, H, zoomOf(1), 1);
+      cover(stillImgs[prev], x, y, w, h, zoomOf(1));
     }
-    cover(stillImgs[i], x, y, W, H, zoomOf(f), into);
+    ctx.globalAlpha = into;
+    cover(stillImgs[i], x, y, w, h, zoomOf(fr));
+    ctx.globalAlpha = 1;
   }
 
   return {
     resize,
-    set(v) { state = v; },
+    set(v) { p = v; },
     draw,
-    get size() { return { W, H }; },
-    S0, R0, RAD0,
+    // dove sta lo showreel, per allinearci il player Vimeo
+    get reel() { return { ...reelRect(), W, H }; },
   };
 }

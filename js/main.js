@@ -2,7 +2,7 @@
 // e muove l'apertura: niente scroll-jacking, tutto reversibile.
 import { PROJECTS, SERVICES } from "./data.js";
 import { VIMEO, mountBackground, mountFull } from "./vimeo.js";
-import { createMosaic } from "./mosaic.js";
+import { createMosaic, PH } from "./mosaic.js";
 import { playIntro } from "./intro.js";
 import { initCal } from "./cal.js";
 
@@ -76,34 +76,46 @@ let heroP = 0;
 let heroVisible = true;
 new IntersectionObserver(([e]) => { heroVisible = e.isIntersecting; }).observe(hero);
 
-function update() {
+// Fasi dell'apertura (frazioni di p, vedi PH in js/mosaic.js): roulette 0-0,40,
+// showreel che si apre a tutto schermo 0,40-0,60. Da qui in poi l'interfaccia del reel.
+const UI_P = PH.OPEN[1];
+let sp = -1;      // p ammorbidito per il canvas: gli scatti della rotella diventano un giro continuo
+let lastT = 0;
+
+function update(now = performance.now()) {
   // il tratto bloccato si misura sullo stage e non su innerHeight: sui telefoni
   // innerHeight cambia con la barra degli indirizzi e farebbe saltare l'animazione
   const pin = hero.offsetHeight - stage.offsetHeight;
   const p = clamp(-hero.getBoundingClientRect().top / pin);
   heroP = p;
 
-  // 0 → 0,45 del tratto (circa 450px su uno schermo da 800, come recordstudio):
-  // la griglia si raddrizza e la tessera centrale diventa lo schermo
-  const z = easeOut(clamp(p / 0.45));
-  const s = mosaic.S0 + (1 - mosaic.S0) * z;
-  const r = mosaic.R0 * (1 - z);
-  mosaic.set({ s, r, k: 1 - z, rad: mosaic.RAD0 * (1 - z) });
-  reelPlayer.style.transform = `translate(-50%, -50%) rotate(${r}rad) scale(${s})`;
+  const dt = Math.min(0.1, (now - lastT) / 1000);
+  lastT = now;
+  if (sp < 0 || reduced) sp = p;
+  else sp += (p - sp) * (1 - Math.exp(-dt / 0.09));
+  if (Math.abs(p - sp) < 1e-4) sp = p;
+  mosaic.set(sp);
 
-  // logo e invito spariscono nel primo tratto
-  const f = clamp(p / 0.2);
+  // il player Vimeo, quando ci sarà, segue il rettangolo dello showreel
+  // (prima che la roulette si fermi resta nascosto)
+  const rr = mosaic.reel;
+  reelPlayer.style.transform = "translate(-50%, -50%)";
+  reelPlayer.style.clipPath = sp < PH.ROLL ? "inset(50%)"
+    : `inset(${rr.y}px ${rr.W - rr.x - rr.w}px ${rr.H - rr.y - rr.h}px ${rr.x}px round ${rr.r}px)`;
+
+  // logo e invito spariscono appena la roulette parte
+  const f = clamp(p / 0.12);
   front.style.setProperty("--front", (1 - f).toFixed(3));
   front.style.setProperty("--front-s", (1 + 0.08 * f).toFixed(3));
   front.style.visibility = f >= 1 ? "hidden" : "visible";
-  stage.style.setProperty("--shade", (1 - z).toFixed(3));
+  stage.style.setProperty("--shade", (1 - clamp((sp - 0.28) / 0.12)).toFixed(3));
 
-  // velature da cinema e comandi del reel a tutto schermo
-  stage.style.setProperty("--bk", clamp((p - 0.4) / 0.14).toFixed(3));
-  reelUi.classList.toggle("on", p > 0.48 && p < 0.999);
+  // velature da cinema e comandi del reel a cornice aperta
+  stage.style.setProperty("--bk", clamp((p - (UI_P - 0.04)) / 0.1).toFixed(3));
+  reelUi.classList.toggle("on", p > UI_P + 0.02 && p < 0.999);
 
   // la pillola si apre solo da qui in poi, e si richiude risalendo
-  const on = p >= 0.45;
+  const on = p >= UI_P - 0.02;
   if (on !== navOn) {
     navOn = on;
     pill.classList.toggle("on", on);
@@ -116,13 +128,13 @@ function update() {
 function loop(now) {
   if (heroVisible && !document.hidden) {
     mosaic.resize();
-    update();
+    update(now);
     mosaic.draw(now);
   }
   requestAnimationFrame(loop);
 }
 // fuori dall'apertura il ciclo non disegna: serve comunque aggiornare la pillola
-addEventListener("scroll", () => { if (!heroVisible) update(); }, { passive: true });
+addEventListener("scroll", () => { if (!heroVisible) update(performance.now()); }, { passive: true });
 addEventListener("resize", () => moveInd(active));
 requestAnimationFrame(loop);
 
@@ -134,7 +146,7 @@ mountBackground(reelPlayer, VIMEO.showreel).then((ok) => {
 const tc = $("#tc");
 const t0 = performance.now();
 setInterval(() => {
-  if (heroP < 0.4 || !heroVisible) return;
+  if (heroP < UI_P - 0.04 || !heroVisible) return;
   const fr = Math.floor((performance.now() - t0) / 40);
   const pad = (n) => String(n).padStart(2, "0");
   tc.textContent = `${pad(Math.floor(fr / 90000) % 24)}:${pad(Math.floor(fr / 1500) % 60)}:${pad(Math.floor(fr / 25) % 60)}:${pad(fr % 25)}`;
@@ -195,9 +207,9 @@ function settle() {
 }
 addEventListener("scroll", () => { findActive(); if (going) settle(); }, { passive: true });
 
-// "Showreel" porta al reel già aperto a tutto schermo, non all'inizio del sito:
-// a 0,6 del tratto bloccato lo zoom e le velature sono finiti (vedi update()).
-const REEL_P = 0.6;
+// "Showreel" porta al reel già aperto, non all'inizio del sito:
+// a 0,8 del tratto bloccato roulette, apertura e velature sono finite (vedi update()).
+const REEL_P = 0.8;
 const reelY = () => hero.getBoundingClientRect().top + scrollY + (hero.offsetHeight - stage.offsetHeight) * REEL_P;
 $(".pill .pl-reel").addEventListener("click", (e) => {
   e.preventDefault();

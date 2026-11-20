@@ -4,7 +4,7 @@
 export const CAL_LINK = "mka-mxgoxl/30min";
 
 const BOX = "#calInline";
-const RED = "#A93F33";
+const YELLOW = "#F0E630";
 
 // snippet ufficiale di Cal.com: mette in coda le chiamate finché embed.js non è caricato
 function loader() {
@@ -54,10 +54,10 @@ function mount() {
     theme: "dark",
     layout: "month_view",
     hideEventTypeDetails: false,
-    // fondo nero come il sito, rosso del branding sui giorni e sui bottoni
+    // fondo nero come il sito, giallo del branding sui giorni e sui bottoni
     cssVarsPerTheme: {
       dark: {
-        "cal-brand": RED, "cal-brand-emphasis": "#c24a3c", "cal-brand-text": "#F1EDE4",
+        "cal-brand": YELLOW, "cal-brand-emphasis": "#D9CF1F", "cal-brand-text": "#000000",
         "cal-bg": "#000000", "cal-bg-muted": "#000000", "cal-bg-subtle": "#141414", "cal-bg-emphasis": "#1f1f1f",
         "cal-text": "#F1EDE4", "cal-text-emphasis": "#F1EDE4",
         "cal-border": "#3a3a3a", "cal-border-subtle": "#262626", "cal-border-booker": "#262626",

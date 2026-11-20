@@ -14,17 +14,20 @@ moduli JavaScript non partono aprendo il file direttamente.
 
 ## Com'è fatta la pagina
 
-1. **Apertura.** Un mosaico di riquadri inclinato a -30° e ridotto al 40%, con
-   il logo "moneta con acronimo esteso" al centro e sotto il bottone per
-   prenotare una call.
-2. **Showreel.** Scorrendo, il mosaico si raddrizza e si ingrandisce finché il
-   riquadro centrale diventa lo schermo intero: lo showreel è quel riquadro.
-   Arrivati a tutto schermo compaiono due velature sfumate con il timecode, e
-   dal basso si apre la **pillola di navigazione**, che da lì resta
-   sempre visibile. Risalendo tutto torna com'era.
+1. **Apertura.** Un mosaico dritto, in orizzontale, di riquadri con le
+   proporzioni dello schermo ridotti al 34%: le file sono sfalsate di mezzo
+   riquadro e scorrono piano di lato. Al centro il logo "moneta con acronimo
+   esteso" e sotto il bottone per prenotare una call.
+2. **Roulette e showreel** (variante del branch `roulette`). Scorrendo, le
+   file girano velocissime come i rulli di una slot, con una scia di
+   movimento, e rallentano fino a fermarsi in griglia con la tessera dello
+   showreel al centro. Le altre tessere si spengono e lo showreel si apre
+   dalla sua tessera fino a tutto schermo. A quel punto compaiono le velature
+   con il timecode e dal basso si apre la **pillola di navigazione**.
+   Risalendo tutto torna com'era.
 3. **Progetti.** Sei lavori su due colonne e tre righe, con titolo, cliente
    e tipo scritti dentro la miniatura. All'hover l'anteprima
-   scorre i fermi immagine del lavoro, si accende un bordo rosso e compare l'etichetta "Guarda". In fondo
+   scorre i fermi immagine del lavoro, si accende un bordo giallo e compare l'etichetta "Guarda". In fondo
    il link a `progetti.html` con l'elenco completo.
 4. **I nostri servizi.** Cosa fa MKA: testo a sinistra e tre blocchi a destra
    (direzione creativa, servizi di produzione multimediale, identità e
@@ -61,18 +64,21 @@ mosaico ruotato copre sempre tutto, anche su un telefono in verticale.
 padding 8x12px in Inter Display 14px. La voce attiva ha una capsula chiara
 `#fafafa` con il testo scuro, e la stessa capsula scivola sotto la voce su cui
 passa il mouse. Le misure sono quelle. In più qui la pillola entra
-allargandosi dal centro e ha in coda la voce "Prenota call" in rosso.
+allargandosi dal centro e ha in coda la voce "Prenota call" in giallo.
 
 ## Branding
 
 | Token | Colore | Uso |
 |---|---|---|
-| `--red` | `#A93F33` | bottoni della call, etichette e bordo delle card, selezione del testo, errori del form |
+| `--yellow` | `#F0E630` | bottoni della call, etichette e bordo delle card, selezione del testo, (testo nero sopra) |
 | `--cream` | `#F1EDE4` | testo su nero, focus da tastiera |
 | `--black` / `--white` | | fondo |
 
-Il sito usa solo nero, crema (il "bianco" del sito) e rosso, per scelta di
-Niccolò: grigio azzurro, blu e giallo del branding non compaiono.
+Il sito usa solo nero, crema (il "bianco" del sito) e giallo, per scelta di
+Niccolò: nella variante `roulette` il giallo `#F0E630` ha preso il posto del
+rosso (20/11/2026), sempre come unico colore d'accento. Sul giallo le scritte
+sono nere, perché il crema non si legge. Grigio azzurro, blu e rosso del
+branding non compaiono.
 
 **Font.** Il primario è Radio Canada Big, scelto dal collettivo al posto di
 Neue Haas Grotesk Display (che stava nel branding ma aveva bisogno di una
@@ -185,6 +191,6 @@ si impostano dall'account Cal.com, non dal sito.
 - Su telefono la pillola tiene tutte le voci, Showreel compreso, con testo e
   margini un po' più stretti.
 - Le voci della pillola sono Showreel, Progetti, Servizi e Prenota call: quando
-  si è nella sezione della call la capsula chiara passa sopra il bottone rosso.
+  si è nella sezione della call la capsula chiara passa sopra il bottone giallo.
   Provato fino a 570px di finestra (il minimo che Chrome desktop consente);
   sotto i 380px le voci si stringono ancora.

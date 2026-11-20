@@ -2,7 +2,7 @@
 // variante "roulette".
 //
 // A riposo è una griglia dritta di tessere (proporzioni dello schermo, scala
-// S0; su schermo verticale orizzontali in 16:9), le file sfalsate di mezza
+// S0; su schermo verticale tre file di tessere 4:3), le file sfalsate di mezza
 // tessera e in lento movimento orizzontale.
 // Scorrendo, le file girano come i rulli di una slot: partono velocissime
 // (con scia di movimento) e rallentano fino a fermarsi in griglia, con al
@@ -15,10 +15,10 @@
 // telefoni sparivano).
 
 const S0 = 0.34;   // scala delle tessere a riposo
-// su schermo verticale (telefono) le tessere restano orizzontali, in 16:9,
-// larghe questa frazione dello schermo: con le proporzioni dello schermo
-// sarebbero state strette e alte
-const PORTRAIT_W = 0.56;
+// su schermo verticale (telefono) sempre tre file che riempiono l'altezza,
+// con tessere orizzontali in 4:3: con le proporzioni dello schermo sarebbero
+// state strette e alte, in 16:9 più larghe dello schermo
+const PORTRAIT_ROWS = 3, PORTRAIT_AR = 4 / 3;
 const RAD = 0;     // raggio degli angoli delle tessere, px a schermo (prova squadrata: era 10)
 
 // fasi, come frazioni di p
@@ -63,7 +63,7 @@ export function createMosaic(canvas, { tiles, stills, reduced }) {
     canvas.width = Math.round(W * dpr);
     canvas.height = Math.round(H * dpr);
     gap = Math.max(10, Math.min(26, W * 0.018));
-    if (H > W) { tw = W * PORTRAIT_W; th = tw * 9 / 16; }
+    if (H > W) { th = (H - (PORTRAIT_ROWS - 1) * gap) / PORTRAIT_ROWS; tw = th * PORTRAIT_AR; }
     else { tw = W * S0; th = H * S0; }
     // file sopra e sotto quella centrale, quante bastano a coprire lo schermo
     rows = Math.ceil((H / 2) / (th + gap)) + 1;
@@ -149,7 +149,7 @@ export function createMosaic(canvas, { tiles, stills, reduced }) {
 
     // lo showreel si apre dalla sua tessera a tutto schermo. Su schermo
     // orizzontale tessera e schermo hanno le stesse proporzioni e l'immagine
-    // cresce senza cambiare taglio; su quello verticale la tessera 16:9 si
+    // cresce senza cambiare taglio; su quello verticale la tessera 4:3 si
     // allunga in altezza e il taglio si adatta mentre si apre
     const r = reelRect();
     ctx.save();

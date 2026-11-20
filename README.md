@@ -116,13 +116,15 @@ allargandosi dal centro e ha in coda la voce "Prenota call" in giallo.
 
 | Token | Colore | Uso |
 |---|---|---|
-| `--yellow` | `#F0E630` | bottoni della call, bordo delle card, selezione del testo, (testo nero sopra) |
+| `--yellow` | `#FFBF00` | bottoni della call, bordo delle card, selezione del testo, (testo nero sopra) |
 | `--cream` | `#F1EDE4` | testo su nero, focus da tastiera |
 | `--black` / `--white` | | fondo |
 
 Il sito usa solo nero, crema (il "bianco" del sito) e giallo, per scelta di
-Niccolò: nella variante `roulette` il giallo `#F0E630` ha preso il posto del
-rosso (20/11/2026), sempre come unico colore d'accento. Sul giallo le scritte
+Niccolò: nella variante `roulette` il giallo ha preso il posto del rosso
+(20/11/2026), sempre come unico colore d'accento. Il giallo del branding
+`#F0E630` è stato poi provato in ambra `#FFBF00` (passaggio del mouse
+`#E6AC00`). Sul giallo le scritte
 sono nere, perché il crema non si legge. Grigio azzurro, blu e rosso del
 branding non compaiono.
 

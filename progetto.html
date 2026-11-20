@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Progetto · MKA Matrioska Creativa</title>
+<meta name="description" content="Un lavoro di MKA, Matrioska Creativa.">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="logo/moneta-crema.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Datatype:wdth,wght@75..100,100..900&family=Radio+Canada+Big:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/progetto.css">
+<script>
+  // apertura della cornice: la classe va messa prima del primo disegno, se no si
+  // vedono titolo e comandi e poi spariscono. Ripiego dopo 4 secondi se js/progetto.js non parte.
+  if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    document.documentElement.classList.add("pj-enter");
+    setTimeout(function () { if (!window.mkaProgetto) document.documentElement.classList.remove("pj-enter"); }, 4000);
+  }
+  if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+</script>
+</head>
+<body class="nav-on">
+<div class="grain" aria-hidden="true"></div>
+<!-- linee guida verticali ai lati della cornice, per tutta la pagina -->
+<div class="pj-rails" aria-hidden="true"></div>
+
+<header class="top">
+  <a class="brand" href="index.html" aria-label="MKA, torna alla home">
+    <img src="logo/moneta-crema.svg" alt="" width="34" height="34">
+    <span class="brand-txt">MKA<span class="brand-sub">Matrioska Creativa</span></span>
+  </a>
+  <a class="cta-top" href="index.html#call">Prenota una call</a>
+</header>
+
+<main id="pj"><!-- riempita da js/progetto.js con il progetto di ?p= --></main>
+
+<footer class="foot">
+  <img class="foot-logo" src="logo/matrioska-creativa-crema.svg" alt="Matrioska Creativa" width="1010" height="346" loading="lazy">
+  <div class="foot-row">
+    <span>©2026 MKA · Matrioska Creativa</span>
+    <a href="https://www.instagram.com/mka.collective/" target="_blank" rel="noopener">Instagram &#8599;</a>
+    <a href="https://vimeo.com/user256848894" target="_blank" rel="noopener">Vimeo &#8599;</a>
+    <a href="index.html#call">Prenota una call</a>
+  </div>
+</footer>
+
+<!-- la pillola si apre appena si scorre (js/progetto.js): in cima coprirebbe il titolo -->
+<nav class="pill" id="pill" aria-label="Navigazione">
+  <span class="pill-ind" aria-hidden="true" style="opacity:0"></span>
+  <a href="index.html#showreel" class="pl-reel">Showreel</a>
+  <a href="progetti.html" class="is-lit" style="background:#fafafa">Progetti</a>
+  <a href="index.html#servizi">Servizi</a>
+  <i class="pill-sep" aria-hidden="true"></i>
+  <a href="index.html#call" class="pill-call">Prenota call</a>
+</nav>
+
+<div class="cur" id="cur" aria-hidden="true">Guarda</div>
+
+<dialog class="modal" id="modal" aria-label="Video del progetto">
+  <button class="modal-x" type="button" id="modalX" aria-label="Chiudi">Chiudi &#10005;</button>
+  <div class="modal-box" id="modalBox"></div>
+</dialog>
+
+<script type="module" src="js/progetto.js"></script>
+</body>
+</html>

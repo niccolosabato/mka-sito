@@ -1,6 +1,9 @@
 // Contenuti del prototipo. Titoli, clienti e link vengono dai post Instagram
 // di @mka.collective; dove il post non aveva un titolo il nome è provvisorio
 // (segnato con `provvisorio: true`).
+// Campi facoltativi per la pagina del progetto (progetto.html?p=<slug>):
+// `credits: [["Regia", "Nome"], ...]` (senza, cliente, tipo e produzione MKA)
+// e `year`. `pos` è il punto di fuoco delle immagini nelle cornici larghe.
 
 export const PROJECTS = [
   {

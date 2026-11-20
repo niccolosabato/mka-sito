@@ -2,8 +2,8 @@
 
 Prototipo del sito di **MKA (Matrioska Creativa)**, collettivo di multimedia
 production. Segue il brief di `../info.md` e usa il branding ufficiale di
-`../branding.pdf`. Pagina singola più una pagina archivio, HTML/CSS/JS puri,
-nessun build step.
+`../branding.pdf`. Pagina principale, archivio dei lavori e pagina del singolo
+progetto, HTML/CSS/JS puri, nessun build step.
 
 ```sh
 python3 -m http.server 8000
@@ -26,17 +26,56 @@ moduli JavaScript non partono aprendo il file direttamente.
    e tipo scritti dentro la miniatura. All'hover l'anteprima
    scorre i fermi immagine del lavoro, si accende un bordo rosso e compare l'etichetta "Guarda". In fondo
    il link a `progetti.html` con l'elenco completo.
-4. **I nostri servizi.** Cosa fa MKA: testo a sinistra e tre blocchi a destra
+4. **I nostri servizi.** Cosa fa MKA, in una colonna sola: il titolo su una
+   riga, sotto i due testi del manifesto affiancati e poi le tre categorie
    (direzione creativa, servizi di produzione multimediale, identità e
-   strategia), ognuno con una breve descrizione e le voci di servizio. Su
-   telefono i blocchi vanno sotto il testo. Le polaroid dei membri sono state
-   tolte su richiesta di Niccolò.
+   strategia) una sotto l'altra. Al clic una categoria si apre e mostra
+   descrizione e voci di servizio; se ne apre una alla volta e il più diventa
+   un meno rosso. Le polaroid dei membri sono state tolte su richiesta di
+   Niccolò.
 5. **Prenota una call.** Calendario Cal.com incorporato su fondo nero
    (account di MKA, evento `mka-mxgoxl/30min`): si scelgono giorno e ora e
    l'invito con il link della videochiamata arriva via email.
 
 L'invito alla call è sempre presente: nell'apertura, in alto a destra in ogni
 momento e come ultima voce della pillola.
+
+## La pagina del progetto
+
+Card della home e righe dell'archivio portano a `progetto.html?p=<slug>`, una
+pagina sola che si riempie da `PROJECTS` di `js/data.js`. Lo schema viene da
+[donprod.uk](https://www.donprod.uk/projects/Iceman), con il nostro branding
+(Radio Canada Big per i titoli, Datatype per le scritte piccole, nero, crema e
+rosso):
+
+1. **Cornice.** Il lavoro a tutto schermo dentro una cornice con le staffe
+   agli angoli. Le linee guida orizzontali arrivano ai bordi dello schermo,
+   quelle verticali corrono per tutta la pagina. Nelle fasce laterali,
+   in verticale, "Tutti i progetti" e il numero del lavoro. Sotto, una
+   timeline a tacche con la testina rossa e il timecode, poi titolo e cliente
+   grandi. In attesa dei video nella cornice girano i fermi immagine; al clic
+   si apre Vimeo (quando il video si potrà incorporare) o il post originale.
+2. **Crediti** in colonne, tipo di lavoro e link al post.
+3. **Etichette e immagine grande**, con un leggero parallasse.
+4. **Due fasce di testo** (titolo e cliente pieni, tipo e "Matrioska Creativa"
+   solo contornati) che scorrono in versi opposti con lo scroll, attorno a
+   un'immagine.
+5. **Immagini e parole alternate**: il tipo di lavoro e "per <cliente>".
+6. **Galleria** con tutte le immagini e la moneta in una casella.
+7. **Indietro / Avanti** verso il lavoro precedente e il successivo, in
+   bianco e nero finché non ci si passa sopra.
+
+**Apertura.** Come su donprod la miniatura cliccata diventa la cornice. Nella
+pagina di partenza (`js/apri.js`) tutto il resto sfuma nel nero e la miniatura
+resta sola, con le staffe. Posizione e immagine passano in `sessionStorage` e
+la pagina del progetto (`js/progetto.js`) la allarga fino alla cornice in
+1,1 secondi, mentre le linee guida corrono verso i bordi. Poi entrano timeline,
+titolo e scritte laterali. Dalla home vola il fermo immagine che la card
+mostrava in quel momento, dall'archivio l'anteprima che segue il mouse. Da un
+link diretto, o dal telefono senza anteprima, la cornice si apre da un
+riquadro piccolo al centro. Lo scroll resta nativo: fasce e parallasse
+leggono la posizione e non la guidano. Con "riduci movimento" niente
+apertura, fasce ferme.
 
 ## Da dove vengono le due animazioni
 
@@ -110,8 +149,12 @@ JavaScript non parte, dopo 4 secondi il sito si mostra comunque.
 ```
 index.html        apertura e showreel · progetti · servizi · call · piede · pillola
 progetti.html     archivio di tutti i lavori, con anteprima al cursore
-css/style.css     tutti gli stili, token in :root
+progetto.html     pagina del singolo progetto (?p=<slug>)
+css/style.css     stili comuni, token in :root
+css/progetto.css  stili della pagina del progetto
 js/main.js        scroll dell'apertura · pillola · card · blocchi dei servizi
+js/apri.js        prima metà dell'apertura di un progetto (miniatura sul nero)
+js/progetto.js    pagina del progetto: costruzione, apertura, fermi, scroll
 js/cal.js         calendario Cal.com della sezione call (CAL_LINK, colori)
 js/intro.js       intro della moneta che cade e torna nel logo
 js/mosaic.js      il mosaico su canvas e i fermi immagine dello showreel
@@ -138,6 +181,10 @@ Quando ci sarà il reel vero:
 2. mettere l'ID in `VIMEO.showreel.id` e `embeddable: true` (più
    `background: true` se il piano lo permette).
 
+I video dei progetti vanno in `VIMEO.projects` (`"slug": "ID"`): con un ID
+il clic sulla cornice della pagina del progetto apre il player in una finestra,
+senza apre il post originale.
+
 Il codice aspetta il player per 5 secondi: se non si avvia, torna ai fermi
 immagine da solo. Il player si posa sopra la tessera centrale del canvas
 (`#reelPlayer`), che `main.js` ruota e scala insieme al mosaico.
@@ -160,8 +207,11 @@ Provvisorio o inventato, quindi da far confermare:
   sono provvisori, da compilare (in `SERVICES` di `js/data.js`);
 - `info@matrioskacreativa.it` è un **indirizzo inventato**;
 - il testo sotto "Prenota una call";
-- i link delle card portano ai post Instagram, in attesa delle pagine dei
-  progetti.
+- i crediti delle pagine dei progetti: per ora solo cliente, tipo e
+  "Produzione: MKA". Quelli veri vanno in `credits` di ogni progetto in
+  `js/data.js` (coppie `["Ruolo", "Nome"]`), l'anno in `year`;
+- le sezioni della pagina del progetto riusano a giro le immagini che ci
+  sono: con una sola immagine (Il buio, Cargo & Belt…) si vede sempre quella.
 
 La call si prenota con Cal.com, piano gratuito (novembre 2026): un solo
 utente, prenotazioni illimitate, ma resta la scritta "Cal.com" sotto il

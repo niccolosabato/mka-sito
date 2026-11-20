@@ -75,18 +75,25 @@
 
 <script type="module">
   import { PROJECTS } from "./js/data.js";
+  import { bindOpen } from "./js/apri.js";
   const rows = document.getElementById("rows");
   rows.innerHTML = PROJECTS.map((p, i) => `
-    <li><a href="${p.url}" target="_blank" rel="noopener" data-img="img/${p.imgs[0]}.jpg">
+    <li><a href="progetto.html?p=${p.slug}" data-img="img/${p.imgs[0]}.jpg" data-pos="${p.pos || "50% 50%"}">
       <span class="m n">${String(i + 1).padStart(2, "0")}</span>
       <span class="t">${p.title}</span>
       <span class="meta"><span class="m">${p.client}</span><span class="m">${p.tag}</span></span>
       <span class="ar" aria-hidden="true">&#8599;</span>
     </a></li>`).join("");
   const peek = document.getElementById("peek"), pimg = document.getElementById("peekImg");
+  // al clic l'anteprima che segue il mouse diventa la cornice del progetto (js/apri.js).
+  // Senza anteprima (telefono) la cornice si apre dal centro.
+  bindOpen(rows, "a", (a) => ({
+    el: peek.classList.contains("on") ? peek : null,
+    src: a.dataset.img, pos: a.dataset.pos, radius: "12px",
+  }));
   rows.querySelectorAll("a").forEach((a) => {
     // anteprima solo con il mouse: al tocco comparirebbe e resterebbe lì
-    a.addEventListener("pointerenter", (e) => { if (e.pointerType !== "mouse") return; pimg.src = a.dataset.img; peek.classList.add("on"); });
+    a.addEventListener("pointerenter", (e) => { if (e.pointerType !== "mouse") return; pimg.src = a.dataset.img; pimg.style.objectPosition = a.dataset.pos; peek.classList.add("on"); });
     a.addEventListener("pointerleave", () => peek.classList.remove("on"));
     a.addEventListener("pointermove", (e) => { peek.style.left = e.clientX + 180 + "px"; peek.style.top = e.clientY + "px"; });
   });

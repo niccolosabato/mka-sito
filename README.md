@@ -25,8 +25,8 @@ moduli JavaScript non partono aprendo il file direttamente.
    dalla sua tessera fino a tutto schermo. A quel punto compaiono le velature
    con il timecode e dal basso si apre la **pillola di navigazione**.
    Risalendo tutto torna com'era.
-3. **Progetti.** Sei lavori su due colonne e tre righe, con titolo, cliente
-   e tipo scritti dentro la miniatura. All'hover l'anteprima
+3. **Progetti.** Sei lavori su due colonne e tre righe, con titolo e cliente
+   scritti dentro la miniatura. All'hover l'anteprima
    scorre i fermi immagine del lavoro, si accende un bordo giallo e compare l'etichetta "Guarda". In fondo
    il link a `progetti.html` con l'elenco completo.
 4. **I nostri servizi.** Cosa fa MKA, in una colonna sola: il titolo su una
@@ -109,7 +109,7 @@ allargandosi dal centro e ha in coda la voce "Prenota call" in giallo.
 
 | Token | Colore | Uso |
 |---|---|---|
-| `--yellow` | `#F0E630` | bottoni della call, etichette e bordo delle card, selezione del testo, (testo nero sopra) |
+| `--yellow` | `#F0E630` | bottoni della call, bordo delle card, selezione del testo, (testo nero sopra) |
 | `--cream` | `#F1EDE4` | testo su nero, focus da tastiera |
 | `--black` / `--white` | | fondo |
 

@@ -15,16 +15,19 @@ moduli JavaScript non partono aprendo il file direttamente.
 ## Com'è fatta la pagina
 
 1. **Apertura.** Un mosaico dritto, in orizzontale, di riquadri con le
-   proporzioni dello schermo ridotti al 34%: le file sono sfalsate di mezzo
+   proporzioni dello schermo ridotti al 34% (su telefono in verticale sempre
+   tre file a tutta altezza di riquadri 4:3): le file sono sfalsate di mezzo
    riquadro e scorrono piano di lato. Al centro il logo "moneta con acronimo
    esteso" e sotto il bottone per prenotare una call.
-2. **Roulette e showreel** (variante del branch `roulette`). Scorrendo, le
-   file girano velocissime come i rulli di una slot, con una scia di
+2. **Roulette e showreel** (variante del branch `roulette`). Appena si
+   comincia a scorrere parte un'animazione a tempo, di un secondo, che non
+   segue più lo scroll 1 a 1 (`DUR` in `js/main.js`): le file girano
+   velocissime come i rulli di una slot, con una scia di
    movimento, e rallentano fino a fermarsi in griglia con la tessera dello
    showreel al centro. Le altre tessere si spengono e lo showreel si apre
    dalla sua tessera fino a tutto schermo. A quel punto compaiono le velature
    con il timecode e dal basso si apre la **pillola di navigazione**.
-   Risalendo tutto torna com'era.
+   Tornando in cima l'animazione si riavvolge e tutto torna com'era.
 3. **Progetti.** Sei lavori su due colonne e tre righe, con titolo e cliente
    scritti dentro la miniatura. All'hover l'anteprima
    scorre i fermi immagine del lavoro, si accende un bordo giallo e compare l'etichetta "Guarda". In fondo
@@ -231,8 +234,7 @@ si impostano dall'account Cal.com, non dal sito.
 ## Accessibilità e casi limite
 
 - `prefers-reduced-motion`: niente grana animata, tessere del mosaico ferme,
-  ingressi senza animazione. L'apertura resta legata allo scroll, che
-  muove chi legge.
+  ingressi senza animazione, e lo showreel si apre di colpo senza roulette.
 - Senza JavaScript la pagina si legge lo stesso: al posto del mosaico c'è una
   foto ferma e la pillola è già al suo posto.
 - Sui telefoni l'apertura usa l'altezza dello schermo con la barra degli

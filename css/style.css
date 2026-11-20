@@ -117,7 +117,7 @@ body.nav-on .corner { opacity: 1; }
 @media (max-width: 900px) { .corner { display: none; } }
 
 /* ═══ APERTURA ═══ */
-.hero { position: relative; height: calc(var(--th) * 2.8); }
+.hero { position: relative; height: calc(var(--th) * 2); }
 .hero-stage {
   position: sticky; top: 0; height: var(--th); overflow: hidden;
   background: var(--black);

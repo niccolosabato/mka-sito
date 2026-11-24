@@ -1,18 +1,28 @@
 // Vimeo: tutti gli ID video del sito stanno qui.
 //
-// Stato a novembre 2026: l'account MKA su Vimeo è free e il player risponde
-// 401 da qualunque sito, quindi niente incorporamento. In più la modalità
-// background (video muto in loop senza controlli, quella dello showreel
-// nell'apertura) richiede un piano a pagamento. Finché `embeddable` resta
-// false il sito mostra i fermi immagine e il pulsante apre la pagina Vimeo.
+// Account MKA: user266208334, piano Pro (24/11/2026), video pubblici e
+// incorporabili. Il player è integrato nella pagina (richiesta di Niccolò):
+// parte da solo, muto (i browser non fanno partire l'audio senza un gesto) e
+// in loop, senza l'interfaccia di Vimeo (`controls: false`, possibile con il
+// Pro). Audio, pausa e posizione si comandano dai bottoni del sito con la
+// Player API. Lo usano lo showreel nella tessera centrale dell'apertura e la
+// cornice della pagina di ogni progetto.
 //
-// Il video in bio (1179573849) è BACKSTAGE_001, non uno showreel: va
-// sostituito quando esce il reel vero.
+// Lo showreel vero ancora non c'è: per prova si usa il backstage di Presto.
+
+export const ACCOUNT = "https://vimeo.com/user266208334";
 
 export const VIMEO = {
-  showreel: { id: "1179573849", embeddable: false, background: false },
-  // un ID per progetto quando ci saranno i video, es. "estate-italiana": "123456789"
-  projects: {},
+  showreel: "1249698383",
+  // slug del progetto (js/data.js) -> ID del video
+  projects: {
+    "estate-italiana": "1249678955",
+    "presto-fashion-film": "1249666575",
+    "spiritual-land": "1249686504",
+    "nuyorika": "1249690238",
+    "satori-sound": "1249689644",
+    "backstage-001": "1249698383",
+  },
 };
 
 const API = "https://player.vimeo.com/api/player.js";
@@ -32,51 +42,72 @@ function loadApi() {
   return apiPromise;
 }
 
-// Il player non segnala un 401: semplicemente non diventa mai pronto.
-// Per questo c'è un tempo massimo, dopo il quale si passa al ripiego.
-function readyOrTimeout(player, ms = 5000) {
+// Il player non segnala un errore di incorporamento: semplicemente non diventa
+// mai pronto. Per questo c'è un tempo massimo, dopo il quale si resta sui fermi immagine.
+function readyOrTimeout(player, ms = 6000) {
   return Promise.race([
     player.ready(),
     new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), ms)),
   ]);
 }
 
-export function pageUrl(id) {
-  return `https://vimeo.com/${id}`;
-}
-
-/** Showreel muto in loop dentro la tessera centrale. Ritorna true se parte. */
-export async function mountBackground(el, cfg = VIMEO.showreel) {
-  if (!cfg.id || !cfg.embeddable || !cfg.background) return false;
+/**
+ * Video integrato dentro `el`: parte da solo, muto e in loop, senza
+ * l'interfaccia di Vimeo. L'iframe copre tutto il riquadro come un
+ * object-fit: cover, qualunque sia il formato del video. Ritorna il player
+ * quando il primo fotogramma è a schermo, null se non parte (`el` resta vuoto).
+ */
+export async function mountInline(el, id) {
+  if (!id) return null;
   try {
     const Vimeo = await loadApi();
     const player = new Vimeo.Player(el, {
-      id: cfg.id, background: true, muted: true, loop: true, dnt: true,
+      id, autoplay: true, muted: true, loop: true, controls: false,
+      playsinline: true, dnt: true, title: false, byline: false, portrait: false,
     });
     await readyOrTimeout(player);
+    const [w, h] = await Promise.all([player.getVideoWidth(), player.getVideoHeight()]);
+    cover(el, w / h || 16 / 9);
+    // "playing" arriva al primo fotogramma: prima l'iframe sarebbe nero
+    await Promise.race([new Promise((r) => player.on("playing", r)), new Promise((r) => setTimeout(r, 4000))]);
     el.classList.add("ready");
-    return true;
+    return player;
   } catch {
     el.replaceChildren();
-    return false;
+    return null;
   }
 }
 
-/** Player completo, con audio e controlli, dentro la modale. */
-export async function mountFull(el, cfg = VIMEO.showreel) {
-  const fallback = () => {
-    el.innerHTML = `
-      <div class="modal-fb">
-        <p>Il video su Vimeo per ora non si può incorporare nel sito: l'account è free e ha l'incorporamento disattivato.</p>
-        <p><a class="btn btn-cream" href="${pageUrl(cfg.id)}" target="_blank" rel="noopener">Guardalo su Vimeo &#8599;</a></p>
-      </div>`;
+// l'iframe grande quanto basta per coprire `el` mantenendo il formato del video
+function cover(el, ratio) {
+  const frame = el.querySelector("iframe");
+  if (!frame) return;
+  const fit = () => {
+    const W = el.clientWidth, H = el.clientHeight;
+    const w = Math.max(W, H * ratio), h = w / ratio;
+    Object.assign(frame.style, {
+      position: "absolute", left: "50%", top: "50%", border: "0",
+      width: `${Math.ceil(w)}px`, height: `${Math.ceil(h)}px`, transform: "translate(-50%, -50%)",
+      minWidth: "0", minHeight: "0",
+    });
   };
-  if (!cfg.id || !cfg.embeddable) return fallback();
-  try {
-    const Vimeo = await loadApi();
-    const player = new Vimeo.Player(el, { id: cfg.id, autoplay: true, dnt: true, color: "F1EDE4" });
-    await readyOrTimeout(player);
-  } catch {
-    fallback();
-  }
+  fit();
+  new ResizeObserver(fit).observe(el);
+}
+
+/** Bottone audio: accende e spegne il suono del player, testo e aria-pressed compresi. */
+export function bindAudio(btn, player) {
+  const set = (on) => {
+    btn.setAttribute("aria-pressed", String(on));
+    btn.textContent = on ? "Audio sì" : "Audio no";
+  };
+  set(false);
+  btn.hidden = false;
+  btn.addEventListener("click", async () => {
+    const on = btn.getAttribute("aria-pressed") !== "true";
+    await player.setMuted(!on).catch(() => {});
+    if (on) await player.setVolume(1).catch(() => {});
+    // lo stato vero lo dice il player, non il clic
+    set(!(await player.getMuted().catch(() => !on)));
+  });
 }

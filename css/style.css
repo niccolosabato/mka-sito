@@ -83,10 +83,10 @@ button { font: inherit; color: inherit; }
   font-size: var(--fs-3); text-decoration: none; cursor: pointer;
   transition: transform .4s var(--ease), background-color .3s, color .3s;
 }
-.btn:hover { transform: translateY(-2px); }
+@media (hover: hover) { .btn:hover { transform: translateY(-2px); } }
 .btn:active { transform: translateY(0) scale(.98); }
 .btn-yellow { background: var(--yellow); color: var(--black); }
-.btn-yellow:hover { background: #BEB50E; }
+@media (hover: hover) { .btn-yellow:hover { background: #BEB50E; } }
 .btn-cream { background: var(--cream); color: var(--black); }
 :focus-visible { outline: 2px solid var(--cream); outline-offset: 3px; }
 
@@ -110,7 +110,7 @@ button { font: inherit; color: inherit; }
   font-size: var(--fs-3); text-decoration: none;
   transition: background-color .3s;
 }
-.cta-top:hover { background: #BEB50E; }
+@media (hover: hover) { .cta-top:hover { background: #BEB50E; } }
 
 
 /* ═══ APERTURA ═══ */
@@ -206,6 +206,11 @@ button { font: inherit; color: inherit; }
 }
 .reel-ui.on { opacity: 1; transform: none; pointer-events: auto; }
 .reel-note { margin: 0; }
+/* comandi dei video integrati (showreel e cornice del progetto) */
+.vctl { display: flex; gap: 8px; }
+.vctl [hidden] { display: none; }
+.btn-line { background: transparent; color: var(--cream); box-shadow: inset 0 0 0 1px var(--cream); }
+@media (hover: hover) { .btn-line:hover { background: var(--cream); color: var(--black); } }
 
 
 /* ═══ PILLOLA (misure di unscene.work) ═══ */
@@ -269,7 +274,10 @@ button { font: inherit; color: inherit; }
   transition: background-color .3s, color .3s, border-color .3s;
   margin-bottom: 1.2vw;
 }
-.link-all:hover { background: var(--cream); color: var(--black); border-color: var(--cream); }
+/* hover solo con il mouse: sul telefono restava acceso dopo il tocco, anche
+   tornando indietro alla pagina (che il browser riprende dalla cache così com'era) */
+@media (hover: hover) { .link-all:hover { background: var(--cream); color: var(--black); border-color: var(--cream); } }
+.link-all:focus-visible { background: var(--cream); color: var(--black); border-color: var(--cream); outline: none; }
 
 .work-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
 /* tre progetti in home: il primo grande a tutta riga, sotto due piccoli */
@@ -400,7 +408,7 @@ button { font: inherit; color: inherit; }
 .call-lead { margin: 30px 0 0; font-size: var(--fs-3); max-width: 26em; }
 .call-links { list-style: none; padding: 0; margin: 36px 0 0; display: grid; gap: 8px; }
 .call-links a { font-family: var(--f-mono); font-stretch: 80%; text-transform: uppercase; letter-spacing: .04em; font-size: var(--fs-mono); text-decoration: none; border-bottom: 1px solid rgba(241,237,228,.4); }
-.call-links a:hover { border-color: var(--cream); }
+@media (hover: hover) { .call-links a:hover { border-color: var(--cream); } }
 
 .cal-wrap { min-width: 0; }
 /* altezza minima mentre l'iframe carica, così la pagina non salta */
@@ -410,7 +418,7 @@ button { font: inherit; color: inherit; }
 }
 .cal-wrap.is-ready .cal-fallback { display: none; }
 .cal-fallback a { text-decoration: none; border-bottom: 1px solid rgba(241,237,228,.4); }
-.cal-fallback a:hover { border-color: var(--cream); }
+@media (hover: hover) { .cal-fallback a:hover { border-color: var(--cream); } }
 
 /* ─── piede ─── */
 .foot { position: relative; z-index: 2; background: var(--black); padding: 10vh var(--pad) 130px; }
@@ -421,19 +429,6 @@ button { font: inherit; color: inherit; }
 }
 .foot-row a { text-decoration: none; }
 .foot-row span { margin-right: auto; }
-
-/* ─── modale showreel ─── */
-.modal {
-  width: 100vw; height: 100vh; max-width: none; max-height: none; margin: 0; padding: 0; border: 0;
-  background: rgba(0,0,0,.94); color: var(--cream);
-}
-.modal::backdrop { background: transparent; }
-.modal[open] { display: grid; place-items: center; }
-.modal-box { width: min(92vw, 160vh); aspect-ratio: 16 / 9; position: relative; background: #0a0a0a; border-radius: 0; overflow: hidden; }
-.modal-box iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
-.modal-fb { position: absolute; inset: 0; display: grid; place-content: center; gap: 18px; text-align: center; padding: 24px; }
-.modal-fb p { margin: 0; max-width: 34em; }
-.modal-x { position: absolute; top: 18px; right: var(--pad); background: none; border: 0; cursor: pointer; font-family: var(--f-mono); font-stretch: 80%; text-transform: uppercase; letter-spacing: .04em; font-size: var(--fs-mono); }
 
 /* ─── telefono ─── */
 @media (max-width: 860px) {

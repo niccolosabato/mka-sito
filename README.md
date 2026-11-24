@@ -63,7 +63,7 @@ giallo):
    attorno (tolte il 24/11/2026). Nelle fasce laterali, in verticale, "Tutti i progetti" e il numero del lavoro. Sotto, una
    timeline a tacche con la testina gialla e il timecode, poi titolo e cliente
    grandi. In attesa dei video nella cornice girano i fermi immagine; al clic
-   si apre Vimeo (quando il video si potrà incorporare) o il post originale.
+   il video di Vimeo gira integrato nella cornice, con audio e pausa nella barra.
 2. **Crediti** in colonne, tipo di lavoro e link al post.
 3. **Galleria** di sole foto: una larga, due affiancate, una larga. Le
    scritte tra le foto (etichette, fasce di testo che scorrevano, parole
@@ -188,28 +188,34 @@ logo/             loghi SVG estratti da branding.pdf
 
 ## Vimeo
 
-Il player Vimeo risponde ancora **401** da qualunque sito: l'account MKA è
-free e ha l'incorporamento disattivato (verificato a novembre 2026). Il video
-in bio, `1179573849`, è BACKSTAGE_001 e non uno showreel.
+Dal 24/11/2026 i video sono su un account nuovo, `user266208334`, con piano
+**Pro**: video pubblici e incorporabili. Il sito mostra solo i sei lavori che
+sono su Vimeo (Estate Italiana, Presto Fashion Film, Spiritual Land, Nuyorika,
+Satori Sound, backstage di Presto): i progetti di prova presi da Instagram
+sono stati tolti. Tutti gli ID stanno in `js/vimeo.js`.
 
-Per questo in `js/vimeo.js` lo showreel ha `embeddable: false`. Nel riquadro
-centrale girano i fermi immagine dei lavori a dissolvenza, e "Guarda lo
-showreel" apre una finestra che spiega il problema e manda alla pagina Vimeo.
-Quando ci sarà il reel vero:
+Il player è **integrato nella pagina** (richiesta di Niccolò): parte da solo,
+muto (i browser non fanno partire l'audio senza un gesto) e in loop, senza
+l'interfaccia di Vimeo (`controls: false`, possibile con il Pro). I comandi
+sono del sito e passano dalla Player API:
 
-1. abilitare l'incorporamento sul dominio del sito (impostazioni privacy del
-   video su Vimeo). Per il video muto in loop nel riquadro (modalità
-   `background`) serve un piano a pagamento;
-2. mettere l'ID in `VIMEO.showreel.id` e `embeddable: true` (più
-   `background: true` se il piano lo permette).
+- **showreel** (per ora il backstage di Presto, in attesa del reel vero):
+  gira nella tessera centrale dell'apertura, sotto la scritta ci sono "Audio"
+  e "Pausa". Suona solo a cornice aperta: risalendo al logo o scendendo ai
+  progetti va in pausa e riparte tornando;
+- **pagina del progetto**: il video gira nella cornice sopra i fermi
+  immagine. Nella barra sotto ci sono "Audio" e "Pausa", il clic sulla
+  cornice mette in pausa o fa ripartire, la timeline a tacche porta il video
+  al punto cliccato. Timecode e durata sono quelli del video.
 
-I video dei progetti vanno in `VIMEO.projects` (`"slug": "ID"`): con un ID
-il clic sulla cornice della pagina del progetto apre il player in una finestra,
-senza apre il post originale.
+L'iframe copre il riquadro come un `object-fit: cover` (`cover()` in
+`js/vimeo.js`, ricalcolato con un `ResizeObserver`), perché i video hanno
+formati diversi: 16:9, 2,4:1 e 4:3. Il codice aspetta il player per 6
+secondi: se non si avvia, restano i fermi immagine e i bottoni non compaiono.
 
-Il codice aspetta il player per 5 secondi: se non si avvia, torna ai fermi
-immagine da solo. Il player si posa sopra la tessera centrale del canvas
-(`#reelPlayer`), che `main.js` ruota e scala insieme al mosaico.
+I crediti dei progetti vengono dalle descrizioni dei video su Vimeo, con i
+ruoli tradotti. Due nomi lì sono incompleti ("Melissa ___", "Giulia ___") e
+nel sito compare solo il nome.
 
 ## Cosa è reale e cosa manca
 

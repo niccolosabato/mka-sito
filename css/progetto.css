@@ -23,6 +23,10 @@ main { position: relative; z-index: 1; }
   transition: opacity 1.2s ease, transform 7s linear;
 }
 .pj-stills img.on { opacity: 1; transform: scale(1); }
+/* video di Vimeo muto in loop sopra i fermi immagine (js/vimeo.js lo
+   dimensiona come object-fit: cover). Il clic resta alla cornice */
+.pj-video { position: absolute; inset: 0; overflow: hidden; pointer-events: none; opacity: 0; transition: opacity 1s ease; }
+.pj-video.ready { opacity: 1; }
 
 /* scritte verticali nelle fasce laterali, come "fullscreen" e "sound" di donprod */
 .pj-side {
@@ -33,7 +37,7 @@ main { position: relative; z-index: 1; }
 }
 .pj-side-l { left: calc(var(--side) / 2); transform: translate(-50%, -50%) rotate(180deg); }
 .pj-side-r { left: calc(100% - var(--side) / 2); transform: translate(-50%, -50%); }
-a.pj-side:hover { color: var(--yellow); }
+@media (hover: hover) { a.pj-side:hover { color: var(--yellow); } }
 
 /* timeline a tacche con la testina rossa */
 .pj-bar { margin: 16px calc(var(--side) + var(--in)) 0; }
@@ -52,7 +56,18 @@ a.pj-side:hover { color: var(--yellow); }
   font-family: var(--f-mono); font-stretch: 80%; font-size: var(--fs-mono); letter-spacing: .04em; text-transform: uppercase;
 }
 .pj-bar-meta a { text-decoration: none; border-bottom: 1px solid rgba(241,237,228,.4); }
-.pj-bar-meta a:hover { border-color: var(--cream); }
+/* audio e pausa del video integrato, nello stile delle scritte della barra */
+.pj-btn {
+  padding: 0; background: none; border: 0; cursor: pointer;
+  font: inherit; letter-spacing: inherit; text-transform: inherit; color: inherit;
+  border-bottom: 1px solid rgba(241,237,228,.4);
+}
+.pj-btn[aria-pressed="true"] { color: var(--yellow); border-color: var(--yellow); }
+@media (hover: hover) { .pj-btn:hover { border-color: var(--cream); } }
+.pj-bar-meta .vctl { gap: 20px; }
+/* la timeline è alta 14px: l'area per il clic si allarga sopra e sotto */
+.pj-track::before { content: ""; position: absolute; left: 0; right: 0; top: -10px; bottom: -10px; }
+@media (hover: hover) { .pj-bar-meta a:hover { border-color: var(--cream); } }
 
 .pj-names {
   display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px 48px;
@@ -94,7 +109,7 @@ main > section, body > .foot { transition: opacity .8s var(--ease) .2s; }
 .pj-facts { text-align: right; display: grid; gap: 16px; align-content: start; }
 .pj-facts p { margin: 0; }
 .pj-facts a { text-decoration: none; border-bottom: 1px solid rgba(241,237,228,.4); }
-.pj-facts a:hover { border-color: var(--cream); }
+@media (hover: hover) { .pj-facts a:hover { border-color: var(--cream); } }
 
 /* ═══ galleria ═══ */
 .pj-gallery { padding: clamp(120px, 18vh, 220px) calc(var(--side) + var(--in)) 0; }

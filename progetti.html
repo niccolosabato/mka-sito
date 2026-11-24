@@ -17,12 +17,18 @@
   /* torna da dove si è arrivati (home o progetto), se no alla sezione progetti della home */
   .back {
     display: inline-flex; align-items: center; gap: 10px; margin-bottom: 36px;
-    padding: 11px 20px; border: 1px solid var(--cream); font-size: var(--fs-3); text-decoration: none;
+    padding: 11px 20px; line-height: 1; border: 1px solid var(--cream); font-size: var(--fs-3); text-decoration: none;
     transition: background .3s, color .3s;
   }
-  .back span { transition: transform .4s var(--ease); }
-  .back:hover { background: var(--cream); color: var(--black); }
-  .back:hover span { transform: translateX(-4px); }
+  /* freccia disegnata in SVG e centrata con flex: il carattere della freccia
+     nel font stava più alto o più basso della scritta a seconda del dispositivo */
+  .back svg { width: 16px; height: 16px; flex: none; transition: transform .4s var(--ease); }
+  .back:focus-visible { background: var(--cream); color: var(--black); outline: none; }
+  /* hover solo con il mouse: sul telefono restava acceso dopo il tocco */
+  @media (hover: hover) {
+    .back:hover { background: var(--cream); color: var(--black); }
+    .back:hover svg { transform: translateX(-4px); }
+  }
   .rows { list-style: none; margin: 0; padding: 0; border-top: 1px solid rgba(241,237,228,.2); }
   .rows a {
     display: grid; grid-template-columns: calc(var(--fs-2) * 1.5) 1.4fr 1fr 1fr 40px; align-items: baseline; gap: 16px;
@@ -67,7 +73,7 @@
 </header>
 
 <main class="index">
-  <a class="back" id="back" href="index.html#progetti"><span aria-hidden="true">&#8592;</span> Indietro</a>
+  <a class="back" id="back" href="index.html#progetti"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M14 8H2.5M7 3.5 2.5 8 7 12.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/></svg><span>Indietro</span></a>
   <h1 class="sec-title" style="margin-bottom:clamp(40px,7vw,96px)">Tutti i progetti</h1>
   <ul class="rows" id="rows"></ul>
 </main>

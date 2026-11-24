@@ -4,7 +4,7 @@
 // PROJECTS di js/data.js. Niente staffe né linee guida attorno al player e
 // niente scritte tra le foto (richiesta di Niccolò, 24/11/2026).
 import { PROJECTS } from "./data.js";
-import { VIMEO, mountFull } from "./vimeo.js";
+import { VIMEO, mountInline, bindAudio } from "./vimeo.js";
 import { OPEN_KEY, BRACKETS, bindOpen } from "./apri.js";
 
 window.mkaProgetto = true; // ferma il ripiego dell'<head>
@@ -38,9 +38,7 @@ function build(p) {
   const pos = p.pos || "50% 50%";
   const pic = (name, cls = "", lazy = true) => `<img class="${cls}" src="${img(name)}" alt="" ${lazy ? 'loading="lazy"' : ""} style="object-position:${pos}">`;
 
-  // da dove si guarda il lavoro: per ora il post Instagram o la pagina Vimeo
   const vimeoId = VIMEO.projects[p.slug];
-  const where = /vimeo\.com/.test(p.url) ? "Vimeo" : "Instagram";
   const credits = p.credits || [
     ["Cliente", p.client],
     ["Tipo", p.tag],
@@ -51,8 +49,9 @@ function build(p) {
 
   main.innerHTML = `
   <section class="pj-hero" aria-label="${p.title}">
-    <div class="pj-frame" id="frame" role="link" tabindex="0" aria-label="Guarda ${p.title} su ${vimeoId ? "Vimeo" : where}">
+    <div class="pj-frame" id="frame" aria-label="Video di ${p.title}">
       <div class="pj-stills">${p.imgs.map((n, i) => pic(n, i ? "" : "on", false)).join("")}</div>
+      ${vimeoId ? '<div class="pj-video" id="pjVideo" aria-hidden="true"></div>' : ""}
     </div>
     <a class="pj-side pj-side-l pj-ui" href="progetti.html"><span aria-hidden="true">&#8592;</span> Tutti i progetti</a>
     <span class="pj-side pj-side-r pj-ui">N. ${two(k + 1)} / ${two(PROJECTS.length)}</span>
@@ -61,7 +60,10 @@ function build(p) {
       <div class="pj-track" aria-hidden="true"><i class="pj-head" id="head"></i></div>
       <div class="pj-bar-meta">
         <span id="still">Fermo 1 / ${p.imgs.length}</span>
-        <a href="${p.url}" target="_blank" rel="noopener">Guarda su ${where} <span aria-hidden="true">&#8599;</span></a>
+        <span class="vctl">
+          <button class="pj-btn" type="button" id="pjAudio" aria-pressed="false" hidden>Audio no</button>
+          <button class="pj-btn" type="button" id="pjPause" hidden>Pausa</button>
+        </span>
         <span class="tc" id="tc">00:00:00:00</span>
       </div>
     </div>
@@ -77,7 +79,7 @@ function build(p) {
     <div class="pj-facts">
       ${p.year ? `<p>${p.year}</p>` : ""}
       <p>${p.tag}</p>
-      <p><a href="${p.url}" target="_blank" rel="noopener">Post originale <span aria-hidden="true">&#8599;</span></a></p>
+      <p><a href="${p.url}" target="_blank" rel="noopener">Su Vimeo <span aria-hidden="true">&#8599;</span></a></p>
     </div>
   </section>
 
@@ -108,8 +110,16 @@ function build(p) {
   let cur = Math.max(0, stills.findIndex((s) => from?.src && s.src.endsWith(from.src)));
   stills.forEach((s, j) => s.classList.toggle("on", j === cur));
   enter(stills[cur], from);
-  slideshow(stills, cur);
-  frameClick(p, vimeoId, where);
+  const show = slideshow(stills, cur);
+  // il video integrato parte da solo, muto, sopra i fermi immagine, che
+  // restano solo finché il player non è pronto
+  if (vimeoId) {
+    mountInline($("#pjVideo"), vimeoId).then((player) => {
+      if (!player) return;
+      show.follow(player);
+      controls(player);
+    });
+  }
   reveals();
   pillOnScroll();
   bindOpen($(".pj-pn"), "a.pn", (a) => {
@@ -146,13 +156,25 @@ async function enter(still, from) {
   requestAnimationFrame(() => fly.remove());
 }
 
-/* ═══ fermi immagine nella cornice, in attesa dei video ═══ */
+/* ═══ fermi immagine nella cornice, finché non parte il video ═══ */
+// Ritorna { follow(player) }: da lì timeline, timecode e didascalia seguono il video.
 function slideshow(stills, start) {
   const head = $("#head"), label = $("#still"), tc = $("#tc");
   const n = stills.length;
   const t0 = performance.now() - start * STILL_MS;
   let shown = start;
+  let video = null; // { t, d } aggiornati da timeupdate del player
+  const stamp = (sec) => {
+    // timecode a 25 fotogrammi, come nello showreel della home
+    const fr = Math.floor(sec * 25);
+    tc.textContent = `${two(Math.floor(fr / 90000) % 24)}:${two(Math.floor(fr / 1500) % 60)}:${two(Math.floor(fr / 25) % 60)}:${two(fr % 25)}`;
+  };
   const tick = (now) => {
+    if (video) {
+      head.style.setProperty("--p", (video.d ? video.t / video.d : 0).toFixed(4));
+      stamp(video.t);
+      return requestAnimationFrame(tick);
+    }
     const t = now - t0;
     const total = n * STILL_MS;
     head.style.setProperty("--p", ((t % total) / total).toFixed(4));
@@ -162,37 +184,63 @@ function slideshow(stills, start) {
       stills.forEach((s, j) => s.classList.toggle("on", j === i));
       label.textContent = `Fermo ${i + 1} / ${n}`;
     }
-    // timecode a 25 fotogrammi, come nello showreel della home
-    const fr = Math.floor(t / 40);
-    tc.textContent = `${two(Math.floor(fr / 90000) % 24)}:${two(Math.floor(fr / 1500) % 60)}:${two(Math.floor(fr / 25) % 60)}:${two(fr % 25)}`;
+    stamp(t / 1000);
     requestAnimationFrame(tick);
   };
   requestAnimationFrame(tick);
+  return {
+    follow(player) {
+      video = { t: 0, d: 0 };
+      player.getDuration().then((d) => {
+        video.d = d;
+        label.textContent = `Durata ${two(Math.floor(d / 60))}:${two(Math.round(d % 60))}`;
+      }).catch(() => {});
+      // timeupdate arriva circa 4 volte al secondo: in mezzo si va avanti a
+      // mano, ma solo mentre il video scorre davvero
+      let last = performance.now(), playing = true;
+      player.on("timeupdate", (e) => { video.t = e.seconds; video.d = e.duration || video.d; last = performance.now(); });
+      player.on("pause", () => { playing = false; });
+      player.on("play", () => { playing = true; });
+      player.on("seeked", (e) => { video.t = e.seconds; });
+      const run = (now) => {
+        if (video.d && playing) video.t = Math.min(video.d, video.t + (now - last) / 1000);
+        last = now;
+        requestAnimationFrame(run);
+      };
+      requestAnimationFrame(run);
+    },
+  };
 }
 
-/* ═══ clic sulla cornice: Vimeo se si può incorporare, se no la pagina esterna ═══ */
-function frameClick(p, vimeoId, where) {
-  const frame = $("#frame");
-  const modal = $("#modal"), box = $("#modalBox");
-  const open = () => {
-    if (vimeoId) {
-      modal.showModal();
-      mountFull(box, { id: vimeoId, embeddable: VIMEO.showreel.embeddable });
-    } else {
-      window.open(p.url, "_blank", "noopener");
-    }
+/* ═══ comandi del video: audio, pausa (anche col clic sulla cornice), timeline per spostarsi ═══ */
+function controls(player) {
+  const frame = $("#frame"), pause = $("#pjPause"), track = $(".pj-track");
+  bindAudio($("#pjAudio"), player);
+  let paused = false;
+  const toggle = () => {
+    paused = !paused;
+    (paused ? player.pause() : player.play()).catch(() => {});
+    pause.textContent = paused ? "Play" : "Pausa";
+    cur.innerHTML = paused ? "Play" : "Pausa";
   };
-  frame.addEventListener("click", open);
-  frame.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); } });
-  const close = () => { modal.close(); box.replaceChildren(); };
-  $("#modalX").addEventListener("click", close);
-  modal.addEventListener("click", (e) => { if (e.target === modal) close(); });
-  modal.addEventListener("close", () => box.replaceChildren());
+  pause.hidden = false;
+  pause.addEventListener("click", toggle);
+  frame.addEventListener("click", toggle);
+  frame.style.cursor = "pointer";
 
-  // etichetta "Guarda" che segue il mouse sopra la cornice. Come nella home si
-  // controlla cosa c'è sotto il puntatore anche allo scroll, non solo al movimento.
+  // la timeline a tacche diventa cliccabile: porta il video a quel punto
+  track.removeAttribute("aria-hidden");
+  track.style.cursor = "pointer";
+  track.addEventListener("click", async (e) => {
+    const r = track.getBoundingClientRect();
+    const d = await player.getDuration().catch(() => 0);
+    if (d) player.setCurrentTime(clamp01((e.clientX - r.left) / r.width) * d).catch(() => {});
+  });
+
+  // etichetta "Pausa / Play" che segue il mouse sopra la cornice. Come nella
+  // home si controlla cosa c'è sotto il puntatore anche allo scroll.
   const cur = $("#cur");
-  cur.innerHTML = `Guarda su ${vimeoId ? "Vimeo" : where} &#8599;`;
+  cur.innerHTML = "Pausa";
   let mx = -1, my = -1, raf = 0;
   const check = () => {
     raf = 0;
@@ -208,6 +256,7 @@ function frameClick(p, vimeoId, where) {
   addEventListener("scroll", () => { if (!raf) raf = requestAnimationFrame(check); }, { passive: true });
   root.addEventListener("pointerleave", () => { mx = my = -1; check(); });
 }
+const clamp01 = (x) => Math.min(1, Math.max(0, x));
 
 function reveals() {
   const io = new IntersectionObserver((entries) => {

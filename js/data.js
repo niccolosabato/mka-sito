@@ -1,6 +1,8 @@
-// Contenuti del prototipo. Titoli, clienti e link vengono dai post Instagram
-// di @mka.collective; dove il post non aveva un titolo il nome è provvisorio
-// (segnato con `provvisorio: true`).
+// Contenuti del sito: i sei lavori che MKA ha su Vimeo (account
+// user266208334). I crediti sono quelli delle descrizioni dei video, con i
+// ruoli tradotti; dove un dato non c'era è provvisorio (`provvisorio: true`).
+// I progetti di prova presi da Instagram sono stati tolti il 24/11/2026.
+// Il video di ogni progetto si collega in js/vimeo.js, non qui.
 // Campi facoltativi per la pagina del progetto (progetto.html?p=<slug>):
 // `credits: [["Regia", "Nome"], ...]` (senza, cliente, tipo e produzione MKA)
 // e `year`. `pos` è il punto di fuoco delle immagini nelle cornici larghe.
@@ -9,47 +11,86 @@ export const PROJECTS = [
   {
     slug: "estate-italiana", title: "Estate Italiana", client: "Reviva", tag: "Fashion film",
     imgs: ["estate-italiana-film", "estate-italiana-shoot", "estate-italiana-out"],
-    url: "https://www.instagram.com/p/DbDWqb-DEQP/", featured: true,
+    url: "https://vimeo.com/1249678955", featured: true,
+    credits: [
+      ["Produzione esecutiva", "Ascanio Grande"],
+      ["Regia", "Daniele D'Amato"],
+      ["Direzione della fotografia e camera", "Lorenzo Resta"],
+      ["Assistente operatore", "Melissa"],
+      ["Styling", "Elisa D'Oria"],
+      ["Scenografia", "Miriana Liberti"],
+      ["Trucco", "Francesco Corvaglia"],
+      ["Montaggio e sound design", "Daniele D'Amato"],
+      ["Color", "Lorenzo Resta"],
+      ["Fotografia", "Riccardo Balena"],
+      ["Attori", "Bakary Manneh, Giulia, Alessandro Caló"],
+      ["Vespa", "Riccardo Sodero"],
+      ["Backstage", "Andrea Resta"],
+    ],
   },
   {
     slug: "presto-fashion-film", title: "Presto Fashion Film", client: "Presto", tag: "Fashion film",
-    imgs: ["presto-fashion-film", "backstage-001"],
-    url: "https://www.instagram.com/p/DVLnE9DDEDF/", featured: true,
+    imgs: ["presto-fashion-film", "presto-backstage"],
+    url: "https://vimeo.com/1249666575", featured: true,
+    credits: [
+      ["Produzione esecutiva", "Ascanio Grande"],
+      ["Regia", "Daniele D'Amato"],
+      ["Aiuto regia", "Antonio Vincenti"],
+      ["Direzione della fotografia e camera", "Lorenzo Resta"],
+      ["Colonna sonora", "Luca Ciardo"],
+      ["Voce", "Federico Gravili aka B-KILLER"],
+      ["Montaggio e sound design", "Daniele D'Amato"],
+      ["VFX e AI", "Lorenzo Resta"],
+      ["Scenografia", "Miriana Liberti"],
+      ["Styling", "Mattia Mazzarella"],
+      ["Trucco", "Francesco Corvaglia"],
+      ["Attori", "Bakary Manneh, Gianmaria Bellanova, Francesco Corvaglia, Jacopo Durante, Federico Gravili, Giada Serìo"],
+      ["Fotografia", "Riccardo Balena"],
+      ["Backstage", "Giulio Biffaro"],
+      ["Noleggio", "Alessandro Cesari"],
+    ],
   },
   {
-    slug: "cargo-belt", title: "Cargo & Belt", client: "Presto", tag: "Shooting",
-    imgs: ["cargo-belt"], pos: "50% 42%",
-    url: "https://www.instagram.com/p/DVtGWvxjJ4O/", featured: true,
+    slug: "spiritual-land", title: "Spiritual Land", client: "Progetto MKA", tag: "Film",
+    imgs: ["spiritual-land"], provvisorio: true,
+    url: "https://vimeo.com/1249686504", featured: true,
+    credits: [
+      ["Produzione esecutiva", "Ascanio Grande"],
+      ["Regia", "Daniele D'Amato"],
+      ["Direzione della fotografia e camera", "Lorenzo Resta"],
+    ],
   },
   {
-    slug: "look-book-001", title: "Look Book 001", client: "Presto", tag: "Lookbook",
-    imgs: ["look-book-001"], pos: "50% 30%",
-    url: "https://www.instagram.com/p/DWjFnZbDNfv/",
+    slug: "nuyorika", title: "Nuyorika", client: "Nuyorika", tag: "Visual",
+    imgs: ["nuyorika"],
+    url: "https://vimeo.com/1249690238",
+    credits: [
+      ["Produzione esecutiva", "Ascanio Grande"],
+      ["Regia", "Daniele D'Amato"],
+      ["Direzione della fotografia e camera", "Lorenzo Resta"],
+      ["Assistente operatore", "Melissa"],
+      ["Styling", "Elisa D'Oria"],
+      ["Trucco", "Francesco Corvaglia"],
+      ["Montaggio e sound design", "Daniele D'Amato"],
+      ["Color", "Lorenzo Resta"],
+      ["Fotografia", "Riccardo Balena"],
+      ["Attori", "Milena Perrone, Albi Gjini"],
+    ],
   },
   {
-    slug: "il-giardino", title: "Il giardino", client: "Racconto dal Salento", tag: "Documentario",
-    imgs: ["giardino-salento", "hagia-sophia-bosco"], provvisorio: true,
-    url: "https://www.instagram.com/p/Detc54XMlWE/",
+    slug: "satori-sound", title: "Satori Sound", client: "Satori Sound & Baazar84th", tag: "Teaser",
+    imgs: ["satori-sound"],
+    url: "https://vimeo.com/1249689644",
+    credits: [
+      ["Produzione esecutiva", "Ascanio Grande"],
+      ["Regia", "Daniele D'Amato"],
+      ["Direzione della fotografia e camera", "Lorenzo Resta"],
+    ],
   },
   {
-    slug: "il-buio", title: "Il buio", client: "Progetto MKA", tag: "Corto",
-    imgs: ["il-buio"], pos: "50% 35%", provvisorio: true,
-    url: "https://www.instagram.com/p/Dd3f7O8MfRI/",
-  },
-  {
-    slug: "backstage-001", title: "Backstage_001", client: "MKA", tag: "Backstage",
-    imgs: ["backstage-001"],
-    url: "https://vimeo.com/1179573849",
-  },
-  {
-    slug: "bts-002", title: "Behind the scenes 002", client: "MKA", tag: "Backstage",
-    imgs: ["bts-002"],
-    url: "https://www.instagram.com/p/De_jtr6Mjay/",
-  },
-  {
-    slug: "bosco", title: "Una visione nata a Istanbul", client: "Racconto dal Salento", tag: "Documentario",
-    imgs: ["hagia-sophia-bosco"], provvisorio: true,
-    url: "https://www.instagram.com/p/DetdyrmDDl9/",
+    slug: "backstage-001", title: "Presto, backstage", client: "Presto", tag: "Backstage",
+    imgs: ["presto-backstage", "backstage-001"],
+    url: "https://vimeo.com/1249698383",
   },
 ];
 

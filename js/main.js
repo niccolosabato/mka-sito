@@ -1,7 +1,7 @@
 // MKA, prototipo. Un solo giro di requestAnimationFrame legge lo scroll nativo
 // e muove l'apertura: niente scroll-jacking, tutto reversibile.
 import { PROJECTS, SERVICES } from "./data.js";
-import { VIMEO, mountBackground, mountFull } from "./vimeo.js";
+import { VIMEO, mountInline, bindAudio } from "./vimeo.js";
 import { createMosaic, PH } from "./mosaic.js";
 import { playIntro } from "./intro.js";
 import { initCal } from "./cal.js";
@@ -80,24 +80,23 @@ const pill = $("#pill");
 const mosaic = createMosaic($("#mosaic"), {
   reduced,
   tiles: [
-    { src: img("cargo-belt"), pos: [0.5, 0.4] },
+    { src: img("spiritual-land") },
     { src: img("presto-fashion-film") },
-    { src: img("il-buio"), pos: [0.5, 0.35] },
-    { src: img("hagia-sophia-bosco") },
-    { src: img("look-book-001"), pos: [0.5, 0.3] },
-    { src: img("giardino-salento") },
+    { src: img("nuyorika") },
     { src: img("estate-italiana-shoot"), pos: [0.5, 0.3] },
-    { src: img("bts-002"), pos: [0.5, 0.4] },
+    { src: img("satori-sound") },
+    { src: img("presto-backstage") },
     { src: img("estate-italiana-film") },
     { src: img("backstage-001"), pos: [0.5, 0.45] },
+    { src: img("estate-italiana-out") },
   ],
   stills: [
     { src: img("estate-italiana-film") },
     { src: img("presto-fashion-film") },
-    { src: img("giardino-salento") },
-    { src: img("cargo-belt"), pos: [0.5, 0.45] },
-    { src: img("hagia-sophia-bosco") },
-    { src: img("il-buio"), pos: [0.5, 0.35] },
+    { src: img("spiritual-land") },
+    { src: img("nuyorika") },
+    { src: img("satori-sound") },
+    { src: img("presto-backstage") },
   ],
 });
 
@@ -210,6 +209,7 @@ function loop(now) {
   if (heroVisible && !document.hidden) {
     mosaic.resize();
     update(now);
+    syncReel();
     unlockIfDone();
     mosaic.draw(now);
   }
@@ -220,9 +220,36 @@ addEventListener("scroll", () => { if (!heroVisible) update(performance.now()); 
 addEventListener("resize", () => moveInd(active));
 requestAnimationFrame(loop);
 
-mountBackground(reelPlayer, VIMEO.showreel).then((ok) => {
-  if (ok) $("#reelNote").textContent = "Showreel 2026";
+// showreel integrato: parte da solo, muto, nella tessera centrale; audio e
+// pausa dai bottoni sotto la scritta. Fuori dall'apertura si ferma e
+// rientrando riparte, a meno che non l'abbia messo in pausa chi guarda.
+let reel = null, reelPaused = false;
+mountInline(reelPlayer, VIMEO.showreel).then((player) => {
+  if (!player) return;
+  reel = player;
+  // l'autoplay di Vimeo può ripartire dopo una pausa chiesta troppo presto
+  player.on("play", () => { if (!reelWanted()) player.pause().catch(() => {}); });
+  bindAudio($("#reelAudio"), player);
+  const pause = $("#reelPause");
+  pause.hidden = false;
+  pause.addEventListener("click", () => {
+    reelPaused = !reelPaused;
+    pause.textContent = reelPaused ? "Play" : "Pausa";
+    syncReel();
+  });
+  syncReel();
 });
+// gira solo a cornice aperta e finché l'apertura si vede: risalendo al logo o
+// scendendo ai progetti si ferma (con l'audio acceso suonerebbe dietro)
+let reelOn = null;
+const reelWanted = () => !reelPaused && heroVisible && v >= PH.ROLL;
+function syncReel() {
+  const want = reelWanted();
+  if (!reel || want === reelOn) return;
+  reelOn = want;
+  (want ? reel.play() : reel.pause()).catch(() => {});
+}
+new IntersectionObserver(() => syncReel()).observe(hero);
 
 // timecode a 25 fotogrammi, gira solo quando le velature si vedono
 const tc = $("#tc");
@@ -233,17 +260,6 @@ setInterval(() => {
   const pad = (n) => String(n).padStart(2, "0");
   tc.textContent = `${pad(Math.floor(fr / 90000) % 24)}:${pad(Math.floor(fr / 1500) % 60)}:${pad(Math.floor(fr / 25) % 60)}:${pad(fr % 25)}`;
 }, 40);
-
-/* ─── modale ─── */
-const modal = $("#modal");
-$("#reelOpen").addEventListener("click", () => {
-  modal.showModal();
-  mountFull($("#modalBox"), VIMEO.showreel);
-});
-const closeModal = () => { modal.close(); $("#modalBox").replaceChildren(); };
-$("#modalX").addEventListener("click", closeModal);
-modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
-modal.addEventListener("close", () => $("#modalBox").replaceChildren());
 
 /* ═══ pillola: la capsula chiara segue la sezione corrente e il puntatore ═══ */
 const ind = $(".pill-ind");

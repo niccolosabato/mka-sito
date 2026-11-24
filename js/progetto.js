@@ -1,8 +1,8 @@
 // Pagina del singolo progetto (progetto.html?p=<slug>), sullo schema di
-// donprod.uk/projects: cornice del video con staffe e linee guida, timeline,
-// titolo e cliente grandi, crediti, fasce di testo che scorrono, galleria e
-// "Indietro / Avanti". Tutto è costruito da PROJECTS di js/data.js.
-// Lo scroll resta nativo: gli effetti leggono la posizione, non la guidano.
+// donprod.uk/projects: cornice del video, timeline, titolo e cliente grandi,
+// crediti, galleria di foto e "Indietro / Avanti". Tutto è costruito da
+// PROJECTS di js/data.js. Niente staffe né linee guida attorno al player e
+// niente scritte tra le foto (richiesta di Niccolò, 24/11/2026).
 import { PROJECTS } from "./data.js";
 import { VIMEO, mountFull } from "./vimeo.js";
 import { OPEN_KEY, BRACKETS, bindOpen } from "./apri.js";
@@ -37,8 +37,6 @@ function build(p) {
   document.title = `${p.title} · MKA Matrioska Creativa`;
   const pos = p.pos || "50% 50%";
   const pic = (name, cls = "", lazy = true) => `<img class="${cls}" src="${img(name)}" alt="" ${lazy ? 'loading="lazy"' : ""} style="object-position:${pos}">`;
-  // le immagini per le sezioni più in basso: si riusa quello che c'è, a giro
-  const at = (n) => p.imgs[n % p.imgs.length];
 
   // da dove si guarda il lavoro: per ora il post Instagram o la pagina Vimeo
   const vimeoId = VIMEO.projects[p.slug];
@@ -48,17 +46,13 @@ function build(p) {
     ["Tipo", p.tag],
     ["Produzione", "MKA · Matrioska Creativa"],
   ];
-  const own = /MKA/.test(p.client);
   const prev = PROJECTS[(k - 1 + PROJECTS.length) % PROJECTS.length];
   const next = PROJECTS[(k + 1) % PROJECTS.length];
-  const band = (words, cls) => `<div class="mq ${cls}"><div class="mq-in">${Array(8).fill(`<span>${words}</span>`).join("")}</div></div>`;
 
   main.innerHTML = `
   <section class="pj-hero" aria-label="${p.title}">
     <div class="pj-frame" id="frame" role="link" tabindex="0" aria-label="Guarda ${p.title} su ${vimeoId ? "Vimeo" : where}">
       <div class="pj-stills">${p.imgs.map((n, i) => pic(n, i ? "" : "on", false)).join("")}</div>
-      ${BRACKETS}
-      <i class="pj-guide pj-guide-t" aria-hidden="true"></i><i class="pj-guide pj-guide-b" aria-hidden="true"></i>
     </div>
     <a class="pj-side pj-side-l pj-ui" href="progetti.html"><span aria-hidden="true">&#8592;</span> Tutti i progetti</a>
     <span class="pj-side pj-side-r pj-ui">N. ${two(k + 1)} / ${two(PROJECTS.length)}</span>
@@ -87,29 +81,9 @@ function build(p) {
     </div>
   </section>
 
-  <section class="pj-wide">
-    <ul class="pj-tags">${[p.tag, p.client, p.title, "MKA"].map((t) => `<li>${t}</li>`).join("")}</ul>
-    <figure class="pj-big reveal"><div class="par" data-par="0.08">${pic(at(1))}</div></figure>
-  </section>
-
-  <section class="pj-marquee" aria-hidden="true">
-    ${band(`${p.title}&ensp;·&ensp;${p.client}&ensp;·&ensp;`, "mq-a")}
-    ${band(`${p.tag}&ensp;·&ensp;Matrioska Creativa&ensp;·&ensp;`, "mq-b line")}
-    <figure class="mq-img">${pic(at(2))}</figure>
-  </section>
-
-  <section class="pj-words">
-    <figure class="w-img w-img-1 reveal"><div class="par" data-par="0.06">${pic(at(0))}</div></figure>
-    <h2 class="w-txt w-fill reveal">${p.tag}</h2>
-    <h2 class="w-txt w-line reveal">${own ? "Matrioska Creativa" : `per ${p.client}`}</h2>
-    <figure class="w-img w-img-2 reveal"><div class="par" data-par="0.06">${pic(at(1))}</div></figure>
-  </section>
-
   <section class="pj-gallery">
-    <p class="label">Galleria</p>
-    <div class="g-grid" style="--cols:${Math.min(p.imgs.length + 1, 4)}">
+    <div class="g-grid">
       ${p.imgs.map((n) => `<figure class="g-cell reveal">${pic(n)}</figure>`).join("")}
-      <div class="g-cell g-coin reveal"><img src="logo/moneta-crema.svg" alt="" width="120" height="120" loading="lazy"></div>
     </div>
   </section>
 
@@ -136,7 +110,6 @@ function build(p) {
   enter(stills[cur], from);
   slideshow(stills, cur);
   frameClick(p, vimeoId, where);
-  scrollFx();
   reveals();
   pillOnScroll();
   bindOpen($(".pj-pn"), "a.pn", (a) => {
@@ -158,8 +131,7 @@ async function enter(still, from) {
   const fly = document.createElement("div");
   fly.className = "fly";
   Object.assign(fly.style, { left: `${s.x}px`, top: `${s.y}px`, width: `${s.w}px`, height: `${s.h}px` });
-  fly.innerHTML = `<img src="${still.src}" alt="" style="object-position:${still.style.objectPosition}">${BRACKETS}
-    <i class="pj-guide pj-guide-t"></i><i class="pj-guide pj-guide-b"></i>`;
+  fly.innerHTML = `<img src="${still.src}" alt="" style="object-position:${still.style.objectPosition}">`;
   document.body.append(fly);
   root.classList.add("pj-flying");
 
@@ -169,11 +141,6 @@ async function enter(still, from) {
     { left: `${s.x}px`, top: `${s.y}px`, width: `${s.w}px`, height: `${s.h}px` },
     { left: `${f.left}px`, top: `${f.top}px`, width: `${f.width}px`, height: `${f.height}px` },
   ], { duration: D, easing: ease, fill: "forwards" });
-  // le linee guida partono dalla cornice e corrono fino ai bordi dello schermo
-  $$(".pj-guide", fly).forEach((g) => g.animate(
-    [{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }],
-    { duration: D * 0.7, delay: D * 0.35, easing: "cubic-bezier(.22, 1, .36, 1)", fill: "forwards" },
-  ));
   await move.finished.catch(() => {});
   root.classList.remove("pj-flying", "pj-enter"); // da qui entrano titolo, timeline e comandi (CSS)
   requestAnimationFrame(() => fly.remove());
@@ -240,34 +207,6 @@ function frameClick(p, vimeoId, where) {
   }, { passive: true });
   addEventListener("scroll", () => { if (!raf) raf = requestAnimationFrame(check); }, { passive: true });
   root.addEventListener("pointerleave", () => { mx = my = -1; check(); });
-}
-
-/* ═══ effetti legati allo scroll: fasce di testo e leggero parallasse ═══ */
-function scrollFx() {
-  if (reduced) return;
-  const bands = $$(".mq");
-  const pars = $$("[data-par]");
-  let raf = 0;
-  const run = () => {
-    raf = 0;
-    const vh = innerHeight;
-    bands.forEach((b, i) => {
-      const r = b.getBoundingClientRect();
-      if (r.bottom < -200 || r.top > vh + 200) return;
-      const d = (r.top - vh / 2) * 0.45 * (i % 2 ? 1 : -1);
-      b.firstElementChild.style.transform = `translate3d(calc(-25% + ${d.toFixed(1)}px), 0, 0)`;
-    });
-    pars.forEach((el) => {
-      const r = el.parentElement.getBoundingClientRect();
-      if (r.bottom < 0 || r.top > vh) return;
-      const d = (r.top + r.height / 2 - vh / 2) * -Number(el.dataset.par);
-      el.style.transform = `translate3d(0, ${d.toFixed(1)}px, 0) scale(1.12)`;
-    });
-  };
-  const ask = () => { if (!raf) raf = requestAnimationFrame(run); };
-  addEventListener("scroll", ask, { passive: true });
-  addEventListener("resize", ask);
-  run();
 }
 
 function reveals() {

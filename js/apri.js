@@ -2,7 +2,7 @@
 // diventa la cornice del video nella pagina del progetto.
 //
 // Il passaggio è diviso in due metà. Qui, nella pagina di partenza, tutto il
-// resto sfuma nel nero e la miniatura resta sola, con le staffe agli angoli.
+// resto sfuma nel nero e la miniatura resta sola.
 // Posizione e immagine vanno in sessionStorage. La pagina del progetto
 // (js/progetto.js) riparte da lì e allarga la miniatura fino alla cornice.
 // Fondo nero da una parte e dall'altra: nessun lampo durante il cambio pagina.
@@ -40,13 +40,12 @@ function leave(a, src) {
   const fly = document.createElement("div");
   fly.className = "fly";
   Object.assign(fly.style, { left: `${rect.x}px`, top: `${rect.y}px`, width: `${rect.w}px`, height: `${rect.h}px`, borderRadius: src.radius || "0px" });
-  fly.innerHTML = `<img src="${src.src}" alt="" style="object-position:${src.pos || "50% 50%"}">${BRACKETS}`;
+  fly.innerHTML = `<img src="${src.src}" alt="" style="object-position:${src.pos || "50% 50%"}">`;
   document.body.append(veil, fly);
 
   const ease = "cubic-bezier(.22, 1, .36, 1)";
   veil.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 380, easing: ease, fill: "forwards" });
   fly.animate([{ borderRadius: src.radius || "0px" }, { borderRadius: "0px" }], { duration: 380, easing: ease, fill: "forwards" });
-  fly.querySelectorAll(".br").forEach((b) => b.animate([{ opacity: 0, transform: "scale(1.6)" }, { opacity: 1, transform: "none" }], { duration: 380, easing: ease, fill: "forwards" }));
   setTimeout(() => { location.href = href; }, 400);
 
   // tornando indietro col pulsante del browser la pagina può arrivare dalla
@@ -54,5 +53,5 @@ function leave(a, src) {
   addEventListener("pageshow", (e) => { if (e.persisted) { veil.remove(); fly.remove(); } }, { once: true });
 }
 
-/** Le quattro staffe agli angoli della cornice. */
+/** Le quattro staffe agli angoli (usate da "Indietro / Avanti"). */
 export const BRACKETS = '<i class="br br-tl"></i><i class="br br-tr"></i><i class="br br-bl"></i><i class="br br-br"></i>';

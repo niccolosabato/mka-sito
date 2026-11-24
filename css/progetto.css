@@ -1,7 +1,6 @@
 /* Pagina del singolo progetto, sul modello di donprod.uk/projects.
    Si carica dopo style.css e ne riusa token, testata, pillola, grana e piede.
-   Misure della cornice: --side è il margine ai lati (dove corrono le linee
-   guida verticali), --ftop la distanza dall'alto, --fh l'altezza, calcolata
+   Misure della cornice: --side è il margine ai lati, --ftop la distanza dall'alto, --fh l'altezza, calcolata
    perché timeline, titolo e cliente stiano nel primo schermo. */
 
 :root {
@@ -9,16 +8,9 @@
   --in: clamp(0px, 2.8vw, 52px);
   --ftop: 72px;
   --fh: max(300px, calc(100svh - var(--ftop) - 196px));
-  --guide: rgba(241, 237, 228, .16);
 }
 
 main { position: relative; z-index: 1; }
-
-/* linee guida verticali ai due lati, per tutta la pagina */
-.pj-rails { position: fixed; inset: 0; z-index: 0; pointer-events: none; transition: opacity 1s; }
-.pj-rails::before, .pj-rails::after { content: ""; position: absolute; top: 0; bottom: 0; width: 1px; background: var(--guide); }
-.pj-rails::before { left: var(--side); }
-.pj-rails::after { right: var(--side); }
 
 /* ═══ cornice ═══ */
 .pj-hero { position: relative; padding-top: var(--ftop); }
@@ -31,14 +23,6 @@ main { position: relative; z-index: 1; }
   transition: opacity 1.2s ease, transform 7s linear;
 }
 .pj-stills img.on { opacity: 1; transform: scale(1); }
-
-/* linee guida orizzontali sopra e sotto la cornice, da bordo a bordo dello schermo */
-.pj-guide {
-  position: absolute; left: 50%; width: 100vw; margin-left: -50vw; height: 1px;
-  background: var(--guide); pointer-events: none;
-}
-.pj-guide-t { top: 0; }
-.pj-guide-b { bottom: 0; }
 
 /* scritte verticali nelle fasce laterali, come "fullscreen" e "sound" di donprod */
 .pj-side {
@@ -93,8 +77,10 @@ a.pj-side:hover { color: var(--yellow); }
 .pj-enter .pj-frame { visibility: hidden; }
 .pj-enter .pj-ui { opacity: 0; translate: 0 18px; }
 .pj-enter .pj-track { clip-path: inset(0 100% 0 0); }
-.pj-enter .pj-rails, .pj-enter main > section:not(.pj-hero) { opacity: 0; }
-main > section { transition: opacity .8s var(--ease) .2s; }
+/* anche il footer: finché js/progetto.js non riempie <main> la pagina è vuota e
+   il logo grande del footer starebbe in cima, visibile per un attimo */
+.pj-enter main > section:not(.pj-hero), .pj-enter .foot { opacity: 0; }
+main > section, body > .foot { transition: opacity .8s var(--ease) .2s; }
 
 /* ═══ crediti ═══ */
 .pj-info {
@@ -111,57 +97,14 @@ main > section { transition: opacity .8s var(--ease) .2s; }
 .pj-facts a { text-decoration: none; border-bottom: 1px solid rgba(241,237,228,.4); }
 .pj-facts a:hover { border-color: var(--cream); }
 
-/* ═══ etichette e immagine grande ═══ */
-.pj-wide { padding: clamp(90px, 16vh, 200px) calc(var(--side) + var(--in)) 0; }
-.pj-tags {
-  list-style: none; margin: 0 0 16px; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 28px;
-  font-family: var(--f-mono); font-stretch: 80%; font-size: 13px; letter-spacing: .04em; text-transform: uppercase;
-}
-.pj-big { position: relative; margin: 0; aspect-ratio: 16 / 8; overflow: hidden; background: #0a0a0a; }
-.par { position: absolute; inset: 0; transform: scale(1.12); will-change: transform; }
-.par img { width: 100%; height: 100%; object-fit: cover; }
-
-/* ═══ fasce di testo che scorrono con lo scroll, attorno a un'immagine ═══ */
-.pj-marquee {
-  position: relative; margin: clamp(100px, 16vh, 200px) var(--side) 0;
-  height: clamp(380px, 66vh, 680px); overflow: hidden;
-  display: grid; place-items: center;
-}
-.mq { position: absolute; left: 0; right: 0; }
-.mq-a { top: 20%; }
-.mq-b { top: 50%; }
-.mq-in { display: flex; width: max-content; transform: translate3d(-25%, 0, 0); will-change: transform; }
-.mq span {
-  font-weight: 500; text-transform: uppercase; white-space: nowrap;
-  font-size: clamp(64px, 11vw, 200px); line-height: .9; letter-spacing: -.035em;
-}
-/* testo solo contornato, pieno di nero: il contorno resta crema pieno */
-.line span, .w-line { color: var(--black); -webkit-text-stroke: 1.5px var(--cream); paint-order: stroke fill; }
-.mq-img { position: relative; z-index: 2; margin: 0; width: min(40vw, 560px); aspect-ratio: 4 / 3; overflow: hidden; }
-.mq-img img { width: 100%; height: 100%; object-fit: cover; }
-
-/* ═══ immagini e parole alternate ═══ */
-.pj-words {
-  display: grid; grid-template-columns: 1fr 1fr; align-items: center;
-  gap: clamp(48px, 8vh, 110px) clamp(24px, 4vw, 64px);
-  padding: clamp(100px, 16vh, 200px) calc(var(--side) + var(--in)) 0;
-}
-.w-img { position: relative; margin: 0; aspect-ratio: 16 / 10; overflow: hidden; background: #0a0a0a; }
-.w-img-1 { width: 74%; }
-.w-txt {
-  margin: 0; font-weight: 500; text-transform: uppercase; text-align: center;
-  font-size: clamp(44px, 6.4vw, 124px); line-height: .92; letter-spacing: -.035em;
-}
-
 /* ═══ galleria ═══ */
 .pj-gallery { padding: clamp(120px, 18vh, 220px) calc(var(--side) + var(--in)) 0; }
-.pj-gallery .label { text-align: center; }
-/* le immagini più la moneta su una riga sola (al massimo quattro colonne) */
-.g-grid { display: grid; grid-template-columns: repeat(var(--cols, 3), 1fr); gap: 6px; }
+/* solo foto: una larga, due affiancate, una larga... L'ultima, se resta sola
+   in una riga da due, si allarga */
+.g-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 .g-cell { margin: 0; aspect-ratio: 16 / 10; overflow: hidden; background: #0a0a0a; }
+.g-cell:nth-child(3n+1), .g-cell:nth-child(3n+2):last-child { grid-column: 1 / -1; aspect-ratio: 16 / 9; }
 .g-cell img { width: 100%; height: 100%; object-fit: cover; }
-.g-coin { display: grid; place-items: center; background: var(--black); }
-.g-coin img { width: 28%; height: auto; object-fit: contain; }
 
 /* ═══ indietro / avanti ═══ */
 .pj-pn {
@@ -205,14 +148,6 @@ main > section { transition: opacity .8s var(--ease) .2s; }
   .pj-info { grid-template-columns: 1fr; gap: 20px; }
   .pj-credits div { grid-template-columns: 120px 1fr; }
   .pj-facts { text-align: left; }
-  .pj-big { aspect-ratio: 4 / 3; }
-  .pj-marquee { height: 380px; }
-  .mq-img { width: 62vw; }
-  .pj-words { grid-template-columns: 1fr; }
-  .w-img-1 { width: 80%; }
-  .w-line { order: 3; }
-  .w-img-2 { order: 4; }
-  .g-grid { grid-template-columns: 1fr 1fr; }
   .pj-pn { grid-template-columns: 1fr; gap: 28px; }
   .pn { aspect-ratio: 16 / 10; }
   .pn-word { font-size: clamp(48px, 15vw, 88px); }

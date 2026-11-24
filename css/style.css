@@ -146,7 +146,8 @@ body.nav-on .corner { opacity: 1; }
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   padding: 0 var(--pad);
   opacity: var(--front, 1);
-  transform: scale(var(--front-s, 1));
+  /* --cy (da js/main.js): sale al centro della parte visibile quando la barra degli indirizzi c'è */
+  transform: translateY(var(--cy, 0px)) scale(var(--front-s, 1));
   pointer-events: none;
 }
 .hero-front a { pointer-events: auto; }
@@ -155,26 +156,33 @@ body.nav-on .corner { opacity: 1; }
 .hero-front { --logo-w: min(68vw, 850px); }
 .hero-logo { position: relative; margin: 0; width: var(--logo-w); }
 .hero-logo img { filter: drop-shadow(0 6px 30px rgba(0,0,0,.35)); }
-.hero-letters { width: 100%; height: auto; }
-/* la moneta è il pittogramma intero di branding.pdf (logo/moneta-crema.svg):
-   nel logo la R la copre in parte, qui resta intera. Posata nella O con scala
-   0,45685 e spostamento 614,27/216,38 rispetto al viewBox delle lettere
-   (460,370 1010x346), ricavati da M, K, A e matrioska dei due disegni */
+.hero-letters { display: block; width: 100%; height: auto; }
+/* la moneta è il pittogramma intero di branding.pdf (logo/moneta-crema.svg).
+   Posata nella O con scala 0,45685 e spostamento 614,27/216,38 rispetto al
+   viewBox delle lettere (460,370 1010x346), ricavati da M, K, A e matrioska
+   dei due disegni. */
 .hero-coin {
   position: absolute; left: 50.103%; top: 1.813%; width: 17.912%; height: auto;
   transform-origin: 50% 50%;
 }
+/* la S rimessa sopra la moneta (logo/s-davanti.png, stessa cornice delle
+   lettere): è la S meno l'attacco in basso a sinistra, dove nel logo originale
+   la moneta sta davanti. Ricavata dai due SVG, lettere + moneta + questa S
+   combaciano con il logo intero salvo l'antialias. Senza ombra: nel logo
+   originale la S non fa ombra sulla moneta */
+.hero-logo .hero-s { position: absolute; left: 0; top: 0; width: 100%; height: auto; filter: none; }
 
 /* ─── intro: la moneta cade, si posa e va al suo posto nel logo (js/intro.js) ───
    Con .intro sull'html tutto il resto è nascosto, il fondo resta nero. */
 .intro .mosaic, .intro .hero-shade, .intro .top, .intro .hero-line,
-.intro .hero-bottom, .intro .hero-letters, .intro .hero-coin { opacity: 0; }
+.intro .hero-bottom, .intro .hero-letters, .intro .hero-coin, .intro .hero-s { opacity: 0; }
 .hero-line {
   position: absolute; left: 0; right: 0; top: calc(50% + var(--logo-w) * 346 / 1010 / 2 + 22px);
   margin: 0; text-align: center; font-size: clamp(15px, 1.4vw, 19px);
 }
 .hero-bottom {
-  position: absolute; left: 0; right: 0; bottom: calc(var(--ui, 0px) + max(32px, env(safe-area-inset-bottom)));
+  /* + --cy: annulla lo spostamento di .hero-front, qui basta --ui */
+  position: absolute; left: 0; right: 0; bottom: calc(var(--ui, 0px) + var(--cy, 0px) + max(32px, env(safe-area-inset-bottom)));
   display: flex; flex-direction: column; align-items: center; gap: 14px;
 }
 .hint { }
@@ -318,7 +326,6 @@ body.nav-on .corner { opacity: 1; }
 .leave-veil { position: fixed; inset: 0; z-index: 84; background: var(--black); pointer-events: none; }
 .fly { position: fixed; z-index: 85; pointer-events: none; }
 .fly > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
-.fly .pj-guide { transform: scaleX(0); }
 .br { position: absolute; z-index: 3; width: 20px; height: 20px; border: 0 solid var(--cream); pointer-events: none; transition: border-color .4s; }
 .br-tl { top: -7px; left: -7px; border-top-width: 1.5px; border-left-width: 1.5px; }
 .br-tr { top: -7px; right: -7px; border-top-width: 1.5px; border-right-width: 1.5px; }

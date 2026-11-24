@@ -146,6 +146,7 @@ function update(now = performance.now()) {
   const f = clamp(v / 0.12);
   front.style.setProperty("--front", (1 - f).toFixed(3));
   front.style.setProperty("--front-s", (1 + 0.08 * f).toFixed(3));
+  front.style.setProperty("--cy", mosaic.shift.toFixed(1) + "px");
   front.style.visibility = f >= 1 ? "hidden" : "visible";
   stage.style.setProperty("--shade", (1 - clamp((v - 0.28) / 0.12)).toFixed(3));
 

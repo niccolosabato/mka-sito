@@ -58,34 +58,30 @@ pagina sola che si riempie da `PROJECTS` di `js/data.js`. Lo schema viene da
 (Radio Canada Big per i titoli, Datatype per le scritte piccole, nero, crema e
 giallo):
 
-1. **Cornice.** Il lavoro a tutto schermo dentro una cornice con le staffe
-   agli angoli. Le linee guida orizzontali arrivano ai bordi dello schermo,
-   quelle verticali corrono per tutta la pagina. Nelle fasce laterali,
-   in verticale, "Tutti i progetti" e il numero del lavoro. Sotto, una
+1. **Cornice.** Il lavoro a tutto schermo, senza staffe né linee guida
+   attorno (tolte il 24/11/2026). Nelle fasce laterali, in verticale, "Tutti i progetti" e il numero del lavoro. Sotto, una
    timeline a tacche con la testina gialla e il timecode, poi titolo e cliente
    grandi. In attesa dei video nella cornice girano i fermi immagine; al clic
    si apre Vimeo (quando il video si potrà incorporare) o il post originale.
 2. **Crediti** in colonne, tipo di lavoro e link al post.
-3. **Etichette e immagine grande**, con un leggero parallasse.
-4. **Due fasce di testo** (titolo e cliente pieni, tipo e "Matrioska Creativa"
-   solo contornati) che scorrono in versi opposti con lo scroll, attorno a
-   un'immagine.
-5. **Immagini e parole alternate**: il tipo di lavoro e "per <cliente>".
-6. **Galleria** con tutte le immagini e la moneta in una casella.
-7. **Indietro / Avanti** verso il lavoro precedente e il successivo, in
+3. **Galleria** di sole foto: una larga, due affiancate, una larga. Le
+   scritte tra le foto (etichette, fasce di testo che scorrevano, parole
+   alternate alle immagini) sono state tolte il 24/11/2026.
+4. **Indietro / Avanti** verso il lavoro precedente e il successivo, in
    bianco e nero finché non ci si passa sopra.
 
 **Apertura.** Come su donprod la miniatura cliccata diventa la cornice. Nella
 pagina di partenza (`js/apri.js`) tutto il resto sfuma nel nero e la miniatura
-resta sola, con le staffe. Posizione e immagine passano in `sessionStorage` e
+resta sola. Posizione e immagine passano in `sessionStorage` e
 la pagina del progetto (`js/progetto.js`) la allarga fino alla cornice in
-1,1 secondi, mentre le linee guida corrono verso i bordi. Poi entrano timeline,
+1,1 secondi. Poi entrano timeline,
 titolo e scritte laterali. Dalla home vola il fermo immagine che la card
 mostrava in quel momento, dall'archivio l'anteprima che segue il mouse. Da un
 link diretto, o dal telefono senza anteprima, la cornice si apre da un
-riquadro piccolo al centro. Lo scroll resta nativo: fasce e parallasse
-leggono la posizione e non la guidano. Con "riduci movimento" niente
-apertura, fasce ferme.
+riquadro piccolo al centro. Finché la cornice non è arrivata restano nascosti
+anche le sezioni sotto e il footer: prima che `js/progetto.js` riempia la
+pagina il logo grande del footer stava in cima e si vedeva per un attimo. Con
+"riduci movimento" niente apertura.
 
 ## Da dove vengono le due animazioni
 
@@ -140,9 +136,18 @@ come nel campionario).
 **Loghi.** Estratti dal PDF in vettoriale con `pdftocairo -svg` (pagina 2 per
 il logo esteso, pagina 5 per la moneta), ripuliti e ritagliati. In `logo/` ci
 sono due versioni: quella con `currentColor` da usare inline e quella color
-crema per i tag `<img>`. Nella home il logo esteso è montato in due pezzi:
-`matrioska-creativa-lettere*.svg` (le lettere senza la moneta) e sopra il
-pittogramma intero `moneta-crema.svg`. Nel logo del PDF la moneta è disegnata
+crema per i tag `<img>`. Nella home il logo esteso è montato in tre pezzi, sempre (anche a riposo):
+`matrioska-creativa-lettere*.svg` (le lettere senza la moneta), sopra il
+pittogramma intero `moneta-crema.svg` e sopra ancora `s-davanti.png`, la S
+senza l'attacco in basso a sinistra (lì nel logo originale la moneta sta
+davanti). La S si apre insieme alle lettere, quindi la moneta in arrivo le
+passa già dietro. `s-davanti.png` è ricavata dai due SVG a 3x: nel logo
+intero la moneta è ridisegnata sopra le lettere con un morso a forma di S
+(i gruppi con `clip-path` in fondo al file); S delle lettere meno la moneta
+di quei gruppi, più il morso vicino alla S. I tre pezzi combaciano con il
+logo intero salvo l'antialias. Il logo intero non si mostra: per un po'
+riappariva a fine intro, ma tra lui e la moneta posata c'era un piccolo scatto
+(Niccolò, 24/11/2026). Nel logo del PDF la moneta è disegnata
 già tagliata in alto a sinistra, dove la copre la R: il pittogramma invece è
 completo ed è lo stesso disegno, in scala 0,457. Posizione e scala sono state
 ricavate facendo combaciare M, K, A e la matrioska dei due disegni (scarto

@@ -60,9 +60,12 @@
 
     <div class="hero-front" id="heroFront">
       <h1 class="hero-logo">
-        <!-- logo diviso in due: le lettere e la moneta al posto della O, che nell'intro cade e poi torna qui -->
+        <!-- logo in tre pezzi: le lettere, la moneta al posto della O (nell'intro cade e poi
+             torna qui, js/intro.js) e sopra la S, così la moneta sta dietro la S come nel logo
+             originale, già mentre arriva. Il logo intero non si mostra: tra i due c'era un piccolo scatto -->
         <img class="hero-letters" src="logo/matrioska-creativa-lettere-crema.svg" alt="Matrioska Creativa" width="1010" height="346">
-        <img class="hero-coin" id="heroCoin" src="logo/moneta-crema.svg" alt="" width="396" height="396">
+        <img class="hero-coin" id="heroCoin" src="logo/moneta-crema.svg" alt="" width="396" height="396" aria-hidden="true">
+        <img class="hero-s" src="logo/s-davanti.png" alt="" width="1010" height="346" aria-hidden="true">
       </h1>
       <p class="hero-line">Collettivo di multimedia production</p>
       <div class="hero-bottom">

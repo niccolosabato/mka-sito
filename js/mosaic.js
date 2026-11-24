@@ -51,6 +51,21 @@ export function createMosaic(canvas, { tiles, stills, reduced }) {
   let W = 0, H = 0, dpr = 1, gap = 24, rows = 1;
   let p = 0;
   let tw = 0, th = 0;          // misura delle tessere a riposo
+  // centro verticale della parte visibile: il canvas è alto 100lvh (barra degli
+  // indirizzi nascosta), ma finché la barra c'è se ne vede solo la parte alta,
+  // e centrare su H/2 metteva tutto più in basso. cy segue innerHeight/2 con
+  // un ritardo morbido, così quando la barra sparisce non salta
+  let cy = 0, VH = 0;
+  // 100svh: altezza con la barra, misurata una volta per resize
+  const svh = () => {
+    const d = document.createElement("div");
+    d.style.cssText = "position:fixed;top:0;height:100svh;width:0;visibility:hidden";
+    document.body.appendChild(d);
+    const h = d.offsetHeight;
+    d.remove();
+    return h;
+  };
+  const visCenter = () => Math.min(H, innerHeight || H) / 2;
   const prevOff = new Map();   // ultimo spostamento di ogni fila, per la scia
 
   function resize() {
@@ -63,10 +78,14 @@ export function createMosaic(canvas, { tiles, stills, reduced }) {
     canvas.width = Math.round(W * dpr);
     canvas.height = Math.round(H * dpr);
     gap = Math.max(10, Math.min(26, W * 0.018));
-    if (H > W) { th = (H - (PORTRAIT_ROWS - 1) * gap) / PORTRAIT_ROWS; tw = th * PORTRAIT_AR; }
+    VH = Math.min(H, svh() || H);
+    cy = visCenter();
+    // su telefono le tre file riempiono l'altezza con la barra (svh), così si
+    // vedono intere anche prima che la barra si nasconda
+    if (H > W) { th = (VH - (PORTRAIT_ROWS - 1) * gap) / PORTRAIT_ROWS; tw = th * PORTRAIT_AR; }
     else { tw = W * S0; th = H * S0; }
     // file sopra e sotto quella centrale, quante bastano a coprire lo schermo
-    rows = Math.ceil((H / 2) / (th + gap)) + 1;
+    rows = Math.ceil(H / (th + gap)) + 1;
     prevOff.clear();
   }
 
@@ -88,12 +107,13 @@ export function createMosaic(canvas, { tiles, stills, reduced }) {
     ctx.imageSmoothingQuality = "medium";
 
     const pw = tw + gap, ph = th + gap;
+    cy += (visCenter() - cy) * 0.2;
     const f = out4(clamp(p / PH.ROLL));
     const landed = p >= PH.ROLL;
     const small = W < 700;
 
     for (let d = -rows; d <= rows; d++) {
-      const y = H / 2 + d * ph - th / 2;
+      const y = cy + d * ph - th / 2;
       if (y > H || y + th < 0) continue;
       const ad = Math.abs(d);
       // la fila centrale va a sinistra, le altre alternano verso
@@ -164,7 +184,8 @@ export function createMosaic(canvas, { tiles, stills, reduced }) {
   function reelRect() {
     const o = inOut(seg(p, PH.OPEN));
     const w = lerp(tw, W, o), h = lerp(th, H, o);
-    return { x: (W - w) / 2, y: (H - h) / 2, w, h, r: RAD * (1 - o), open: o };
+    // il centro parte da quello visibile e arriva a H/2, dove la cornice è a tutto canvas
+    return { x: (W - w) / 2, y: lerp(cy, H / 2, o) - h / 2, w, h, r: RAD * (1 - o), open: o };
   }
 
   // showreel provvisorio: fermi immagine a dissolvenza con zoom lento
@@ -192,5 +213,7 @@ export function createMosaic(canvas, { tiles, stills, reduced }) {
     draw,
     // dove sta lo showreel, per allinearci il player Vimeo
     get reel() { return { ...reelRect(), W, H }; },
+    // quanto il centro visibile sta sopra quello del canvas (px, ≤ 0)
+    get shift() { return cy - H / 2; },
   };
 }

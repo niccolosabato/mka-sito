@@ -32,6 +32,7 @@ export function playIntro() {
 
   const coin = document.getElementById("heroCoin");
   const letters = document.querySelector(".hero-letters");
+  const sFront = document.querySelector(".hero-s"); // la S che passa davanti alla moneta
   const [top, line, bottom] = [".top", ".hero-line", ".hero-bottom"].map((s) => document.querySelector(s));
   const backdrop = [".mosaic", ".hero-shade"].map((s) => document.querySelector(s));
   const anims = [];
@@ -56,7 +57,7 @@ export function playIntro() {
   // ricarica a pagina già scorsa: il browser riporta giù, l'intro non ha senso
   if (scrollY > 4) return end();
 
-  const ready = Promise.all([coin, letters].map((i) => i.decode().catch(() => {})));
+  const ready = Promise.all([coin, letters, sFront].map((i) => i.decode().catch(() => {})));
   Promise.race([ready, sleep(1500)]).then(() => sleep(180)).then(() => {
     if (!over) run();
   });
@@ -123,12 +124,15 @@ export function playIntro() {
     const reveal = GO + TRAVEL * 0.5;
     const show = (el, keys, delay, duration) =>
       anims.push(el.animate(keys, { delay, duration, easing: "cubic-bezier(.22, 1, .36, 1)", fill: "backwards" }));
-    // le lettere si aprono dal centro della moneta (58,7% 26,9% del logo)
-    show(letters, [
+    // le lettere si aprono dal centro della moneta (58,7% 26,9% del logo); la S
+    // sopra la moneta si apre con loro, così la moneta in arrivo le passa dietro
+    const open = [
       { clipPath: "circle(0% at 58.7% 26.9%)", opacity: 0 },
       { clipPath: "circle(20% at 58.7% 26.9%)", opacity: 1, offset: 0.3 },
       { clipPath: "circle(90% at 58.7% 26.9%)", opacity: 1 },
-    ], reveal, 1000);
+    ];
+    show(letters, open, reveal, 1000);
+    show(sFront, open, reveal, 1000);
     backdrop.forEach((el) => show(el, [{ opacity: 0, transform: "scale(1.06)" }, { opacity: 1, transform: "none" }], reveal + 250, 1500));
     show(line, [{ opacity: 0, transform: "translateY(10px)" }, { opacity: 1, transform: "none" }], reveal + 450, 800);
     show(bottom, [{ opacity: 0, transform: "translateY(14px)" }, { opacity: 1, transform: "none" }], reveal + 600, 800);

@@ -13,6 +13,13 @@
   --f-sans: "Radio Canada Big", system-ui, sans-serif;
   --f-mono: "Datatype", ui-monospace, monospace;
 
+  /* scala dei testi (richiesta di Niccolò, 24/11/2026): tre grandezze in
+     Radio Canada Big più una sola per il Datatype. Non aggiungerne altre */
+  --fs-1: clamp(44px, 6.4vw, 108px);  /* titoli delle sezioni e del progetto */
+  --fs-2: clamp(24px, 2.6vw, 40px);   /* sottotitoli: card, servizi, righe, numerazioni */
+  --fs-3: 15px;                       /* testo, bottoni, pillola */
+  --fs-mono: 13px;                    /* tutto il Datatype */
+
   --pad: clamp(16px, 2.2vw, 32px);
   --ease: cubic-bezier(.22, 1, .36, 1);
 
@@ -35,7 +42,7 @@ body {
   color: var(--cream);
   font-family: var(--f-sans);
   font-weight: 400;
-  font-size: 16px;
+  font-size: var(--fs-3);
   line-height: 1.45;
   -webkit-font-smoothing: antialiased;
   overflow-x: clip;
@@ -48,10 +55,10 @@ button { font: inherit; color: inherit; }
 .skip { position: fixed; left: 12px; top: -60px; z-index: 100; background: var(--yellow); color: var(--black); padding: 8px 12px; border-radius: 0; }
 .skip:focus { top: 12px; }
 
-.label, .hint, .reel-note, .band, .corner, .tc {
+.label, .hint, .reel-note, .band, .tc {
   font-family: var(--f-mono);
   font-stretch: 80%;
-  font-size: 13px;
+  font-size: var(--fs-mono);
   letter-spacing: .04em;
   text-transform: uppercase;
 }
@@ -73,7 +80,7 @@ button { font: inherit; color: inherit; }
 .btn {
   display: inline-flex; align-items: center; gap: .4em;
   height: 46px; padding: 0 22px; border: 0; border-radius: 0;
-  font-size: 15px; text-decoration: none; cursor: pointer;
+  font-size: var(--fs-3); text-decoration: none; cursor: pointer;
   transition: transform .4s var(--ease), background-color .3s, color .3s;
 }
 .btn:hover { transform: translateY(-2px); }
@@ -95,26 +102,16 @@ button { font: inherit; color: inherit; }
   display: flex; align-items: center; gap: 12px; text-decoration: none;
   mix-blend-mode: difference;
 }
-.brand img { width: 34px; height: 34px; }
-.brand-txt { font-family: var(--f-mono); font-stretch: 80%; font-size: 15px; letter-spacing: .04em; line-height: 1.05; display: flex; flex-direction: column; }
-.brand-sub { font-size: 11px; text-transform: uppercase; }
+/* logo esteso (MATRIOSKA CREATIVA su due righe), niente scritte in Datatype */
+.brand img { display: block; height: 40px; width: auto; }
 .cta-top {
   height: 34px; display: inline-flex; align-items: center; padding: 0 14px;
   border-radius: 0; background: var(--yellow); color: var(--black);
-  font-size: 14px; text-decoration: none;
+  font-size: var(--fs-3); text-decoration: none;
   transition: background-color .3s;
 }
 .cta-top:hover { background: #BEB50E; }
 
-.corner {
-  position: fixed; bottom: 47px; z-index: 55; font-size: 12px;
-  color: var(--cream); mix-blend-mode: difference; text-decoration: none;
-  opacity: 0; transition: opacity .5s;
-}
-.corner-l { left: var(--pad); }
-.corner-r { right: var(--pad); }
-body.nav-on .corner { opacity: 1; }
-@media (max-width: 900px) { .corner { display: none; } }
 
 /* ═══ APERTURA ═══ */
 .hero { position: relative; height: calc(var(--th) * 2); }
@@ -178,7 +175,7 @@ body.nav-on .corner { opacity: 1; }
 .intro .hero-bottom, .intro .hero-letters, .intro .hero-coin, .intro .hero-s { opacity: 0; }
 .hero-line {
   position: absolute; left: 0; right: 0; top: calc(50% + var(--logo-w) * 346 / 1010 / 2 + 22px);
-  margin: 0; text-align: center; font-size: clamp(15px, 1.4vw, 19px);
+  margin: 0; text-align: center; font-size: var(--fs-3);
 }
 .hero-bottom {
   /* + --cy: annulla lo spostamento di .hero-front, qui basta --ui */
@@ -229,7 +226,7 @@ body.nav-on .corner { opacity: 1; }
   position: relative; z-index: 1;
   display: inline-flex; align-items: center; height: 34px; padding: 8px 12px;
   border-radius: 0; color: #fafafa; text-decoration: none;
-  font-size: 14px; line-height: 18px; white-space: nowrap;
+  font-size: var(--fs-3); line-height: 18px; white-space: nowrap;
   opacity: 0; transition: color .3s, opacity .4s;
 }
 .pill.on a { opacity: 1; transition-delay: 0s, .35s; }
@@ -245,15 +242,15 @@ body.nav-on .corner { opacity: 1; }
 /* nella sezione della call la capsula chiara passa sopra il bottone giallo */
 .pill a.pill-call.is-lit { background: transparent; color: var(--ink); }
 @media (max-width: 560px) {
-  .pill a { padding: 8px 10px; font-size: 13px; }
+  .pill a { padding: 8px 9px; }
 }
-@media (max-width: 380px) { .pill a { padding: 8px 8px; font-size: 12.5px; } }
+@media (max-width: 380px) { .pill a { padding: 8px 6px; } }
 
 /* ═══ SEZIONI ═══ */
 .sec-title {
   margin: 0; font-weight: 500;
-  font-size: clamp(64px, 12.5vw, 210px);
-  line-height: .86; letter-spacing: -.055em;
+  font-size: var(--fs-1);
+  line-height: .9; letter-spacing: -.045em;
 }
 .label { margin: 0 0 18px; }
 
@@ -266,16 +263,18 @@ body.nav-on .corner { opacity: 1; }
   display: grid; grid-template-columns: 1fr auto; align-items: end;
   margin-bottom: clamp(40px, 7vw, 96px);
 }
-.sec-head .label { grid-column: 1 / -1; }
 .link-all {
   font-family: var(--f-mono); font-stretch: 80%; text-transform: uppercase; letter-spacing: .04em;
-  font-size: 14px; text-decoration: none; padding: 10px 16px; border: 1px solid rgba(241,237,228,.35); border-radius: 0;
+  font-size: var(--fs-mono); text-decoration: none; padding: 10px 16px; border: 1px solid rgba(241,237,228,.35); border-radius: 0;
   transition: background-color .3s, color .3s, border-color .3s;
   margin-bottom: 1.2vw;
 }
 .link-all:hover { background: var(--cream); color: var(--black); border-color: var(--cream); }
 
 .work-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+/* tre progetti in home: il primo grande a tutta riga, sotto due piccoli */
+.work-grid .card:first-child { grid-column: 1 / -1; }
+.work-grid .card:first-child .card-media { aspect-ratio: 16 / 8; }
 /* lo stato acceso (.is-on) lo mette js/main.js, non :hover: vedi la nota lì */
 .card { display: block; text-decoration: none; }
 .card-media {
@@ -306,14 +305,15 @@ body.nav-on .corner { opacity: 1; }
   padding: clamp(16px, 1.8vw, 26px);
   color: var(--cream);
 }
-.card-n { font-family: var(--f-mono); font-stretch: 80%; font-size: 13px; }
-.card-title { margin: 0; font-size: clamp(22px, 2.2vw, 32px); font-weight: 500; letter-spacing: -.02em; line-height: 1.1; }
-.card-client { grid-column: 2; font-family: var(--f-mono); font-stretch: 80%; font-size: 14px; text-transform: uppercase; letter-spacing: .04em; }
+/* numerazione grande come il titolo (richiesta di Niccolò) */
+.card-n { font-size: var(--fs-2); font-weight: 500; letter-spacing: -.02em; line-height: 1.1; }
+.card-title { margin: 0; font-size: var(--fs-2); font-weight: 500; letter-spacing: -.02em; line-height: 1.1; }
+.card-client { grid-column: 2; font-family: var(--f-mono); font-stretch: 80%; font-size: var(--fs-mono); text-transform: uppercase; letter-spacing: .04em; }
 
 /* etichetta che segue il puntatore sopra le card, accanto alla freccia (che resta visibile) */
 .cur {
   position: fixed; left: 0; top: 0; z-index: 80; pointer-events: none;
-  font-family: var(--f-mono); font-stretch: 80%; font-size: 13px; text-transform: uppercase; letter-spacing: .04em;
+  font-family: var(--f-mono); font-stretch: 80%; font-size: var(--fs-mono); text-transform: uppercase; letter-spacing: .04em;
   padding: 9px 14px; border-radius: 0; background: var(--cream); color: var(--black);
   transform: translate(16px, 18px) scale(0); transform-origin: 0 0; transition: transform .35s var(--ease);
 }
@@ -338,11 +338,11 @@ body.nav-on .corner { opacity: 1; }
   background: var(--black); color: var(--cream);
   padding: 12vh var(--pad) 12vh;
 }
-.crew .sec-title { font-size: clamp(36px, 10.4vw, 190px); white-space: nowrap; }
+.crew .sec-title { font-size: min(var(--fs-1), 10.4vw); white-space: nowrap; }
 /* i due testi del manifesto affiancati sotto il titolo */
 .crew-intro { display: grid; grid-template-columns: 1fr 1fr; gap: 24px 40px; margin-top: clamp(28px, 4vw, 56px); }
-.crew-lead { margin: 0; font-size: clamp(22px, 2.3vw, 34px); line-height: 1.15; letter-spacing: -.02em; font-weight: 500; max-width: 18em; }
-.crew-body { margin: 0; font-size: 17px; max-width: 30em; align-self: end; }
+.crew-lead { margin: 0; font-size: var(--fs-2); line-height: 1.15; letter-spacing: -.02em; font-weight: 500; max-width: 18em; }
+.crew-body { margin: 0; font-size: var(--fs-3); max-width: 30em; align-self: end; }
 .services { display: grid; gap: 16px; margin-top: clamp(40px, 6vw, 88px); }
 .svc {
   border-radius: 0;
@@ -353,14 +353,14 @@ body.nav-on .corner { opacity: 1; }
 .svc.is-on { box-shadow: inset 0 0 0 4px var(--yellow); }
 .svc-h { margin: 0; font-weight: 500; }
 .svc-head {
-  width: 100%; display: grid; grid-template-columns: 56px 1fr auto; align-items: center; gap: 16px;
+  width: 100%; display: grid; grid-template-columns: calc(var(--fs-2) * 1.5) 1fr auto; align-items: baseline; gap: 16px;
   padding: clamp(22px, 2.6vw, 40px); background: none; border: 0; border-radius: inherit;
   text-align: left; cursor: pointer;
 }
-.svc-n { font-family: var(--f-mono); font-stretch: 80%; font-size: 13px; font-weight: 400; }
-.svc-title { font-weight: 500; font-size: clamp(26px, 3.4vw, 56px); line-height: 1.05; letter-spacing: -.03em; }
+.svc-n { font-size: var(--fs-2); font-weight: 500; line-height: 1.05; letter-spacing: -.03em; }
+.svc-title { font-weight: 500; font-size: var(--fs-2); line-height: 1.05; letter-spacing: -.03em; }
 /* più che diventa meno (e giallo): la stanghetta verticale si chiude ruotando */
-.svc-plus { position: relative; width: 26px; height: 26px; }
+.svc-plus { position: relative; width: 26px; height: 26px; align-self: center; }
 .svc-plus::before, .svc-plus::after {
   content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 2px; margin-top: -1px;
   background: var(--cream); transition: transform .5s var(--ease), background-color .3s;
@@ -374,14 +374,14 @@ body.nav-on .corner { opacity: 1; }
 .svc-inner {
   min-height: 0; overflow: hidden;
   display: grid; gap: 14px; align-content: start;
-  padding: 0 clamp(22px, 2.6vw, 40px) 0 calc(clamp(22px, 2.6vw, 40px) + 72px);
+  padding: 0 clamp(22px, 2.6vw, 40px) 0 calc(clamp(22px, 2.6vw, 40px) + var(--fs-2) * 1.5 + 16px);
   transition: padding-bottom .6s var(--ease);
 }
 .svc.open .svc-inner { padding-bottom: clamp(22px, 2.6vw, 40px); }
-.svc-text { margin: 0; font-size: 17px; max-width: 40em; }
+.svc-text { margin: 0; font-size: var(--fs-3); max-width: 40em; }
 .svc-items { list-style: none; padding: 0; margin: 6px 0 0; display: flex; flex-wrap: wrap; gap: 8px; }
 .svc-items li {
-  font-family: var(--f-mono); font-stretch: 80%; text-transform: uppercase; letter-spacing: .04em; font-size: 13px;
+  font-family: var(--f-mono); font-stretch: 80%; text-transform: uppercase; letter-spacing: .04em; font-size: var(--fs-mono);
   padding: 6px 12px; border: 1px solid rgba(241,237,228,.35); border-radius: 0;
 }
 
@@ -392,20 +392,21 @@ body.nav-on .corner { opacity: 1; }
   display: grid; grid-template-columns: minmax(240px, 24vw) 1fr; gap: 40px;
   padding: 12vh var(--pad) 14vh;
 }
-/* colonna dei testi ferma mentre si scorre, come nei servizi. Stretta apposta:
-   sotto gli 800px circa di iframe Cal.com impila dettagli, mese e orari */
-.call-side { align-self: start; position: sticky; top: 110px; }
-.call .sec-title { font-size: clamp(56px, 7vw, 120px); }
-.call-lead { margin: 30px 0 0; font-size: clamp(18px, 1.6vw, 22px); max-width: 26em; }
+/* colonna dei testi, stretta apposta: sotto gli 800px circa di iframe Cal.com
+   impila dettagli, mese e orari. Niente position: sticky (tolto il 24/11/2026):
+   con la colonna alta quasi quanto il calendario si agganciava per un centinaio
+   di px e sembrava scendere e salire seguendo lo scroll */
+.call-side { align-self: start; }
+.call-lead { margin: 30px 0 0; font-size: var(--fs-3); max-width: 26em; }
 .call-links { list-style: none; padding: 0; margin: 36px 0 0; display: grid; gap: 8px; }
-.call-links a { font-family: var(--f-mono); font-stretch: 80%; text-transform: uppercase; letter-spacing: .04em; font-size: 15px; text-decoration: none; border-bottom: 1px solid rgba(241,237,228,.4); }
+.call-links a { font-family: var(--f-mono); font-stretch: 80%; text-transform: uppercase; letter-spacing: .04em; font-size: var(--fs-mono); text-decoration: none; border-bottom: 1px solid rgba(241,237,228,.4); }
 .call-links a:hover { border-color: var(--cream); }
 
 .cal-wrap { min-width: 0; }
 /* altezza minima mentre l'iframe carica, così la pagina non salta */
 .cal-inline { width: 100%; min-height: 560px; overflow: auto; }
 .cal-fallback {
-  margin: 18px 0 0; font-family: var(--f-mono); font-stretch: 80%; text-transform: uppercase; letter-spacing: .04em; font-size: 13px;
+  margin: 18px 0 0; font-family: var(--f-mono); font-stretch: 80%; text-transform: uppercase; letter-spacing: .04em; font-size: var(--fs-mono);
 }
 .cal-wrap.is-ready .cal-fallback { display: none; }
 .cal-fallback a { text-decoration: none; border-bottom: 1px solid rgba(241,237,228,.4); }
@@ -416,7 +417,7 @@ body.nav-on .corner { opacity: 1; }
 .foot-logo { width: 100%; height: auto; }
 .foot-row {
   display: flex; flex-wrap: wrap; gap: 12px 28px; margin-top: 40px;
-  font-family: var(--f-mono); font-stretch: 80%; text-transform: uppercase; letter-spacing: .04em; font-size: 14px;
+  font-family: var(--f-mono); font-stretch: 80%; text-transform: uppercase; letter-spacing: .04em; font-size: var(--fs-mono);
 }
 .foot-row a { text-decoration: none; }
 .foot-row span { margin-right: auto; }
@@ -432,7 +433,7 @@ body.nav-on .corner { opacity: 1; }
 .modal-box iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 .modal-fb { position: absolute; inset: 0; display: grid; place-content: center; gap: 18px; text-align: center; padding: 24px; }
 .modal-fb p { margin: 0; max-width: 34em; }
-.modal-x { position: absolute; top: 18px; right: var(--pad); background: none; border: 0; cursor: pointer; font-family: var(--f-mono); font-stretch: 80%; text-transform: uppercase; letter-spacing: .04em; font-size: 14px; }
+.modal-x { position: absolute; top: 18px; right: var(--pad); background: none; border: 0; cursor: pointer; font-family: var(--f-mono); font-stretch: 80%; text-transform: uppercase; letter-spacing: .04em; font-size: var(--fs-mono); }
 
 /* ─── telefono ─── */
 @media (max-width: 860px) {
@@ -443,6 +444,7 @@ body.nav-on .corner { opacity: 1; }
   .foot { padding: 60px var(--pad) 120px; }
   .sec-head { margin-bottom: 36px; }
   .work-grid { grid-template-columns: 1fr; gap: 28px; }
+  .work-grid .card:first-child .card-media { aspect-ratio: 4 / 3; }
   .crew, .call { grid-template-columns: 1fr; }
   /* su telefono i contatti vanno sotto il calendario: la colonna si scioglie
      e i suoi figli diventano righe della griglia di .call */
@@ -451,12 +453,12 @@ body.nav-on .corner { opacity: 1; }
   .call .cal-wrap { margin-top: 36px; }
   .call .call-links { order: 1; margin-top: 36px; }
   .crew-intro { grid-template-columns: 1fr; }
-  .svc-head { grid-template-columns: 32px 1fr auto; gap: 12px; }
+  .svc-head { grid-template-columns: calc(var(--fs-2) * 1.5) 1fr auto; gap: 12px; }
   .svc-plus { width: 20px; height: 20px; }
   .svc-inner { padding-left: clamp(22px, 2.6vw, 40px); }
   .sec-head { grid-template-columns: 1fr; gap: 20px; }
   .link-all { justify-self: start; }
-  .brand-sub { display: none; }
+  .brand img { height: 32px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

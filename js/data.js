@@ -24,17 +24,17 @@ export const PROJECTS = [
   {
     slug: "look-book-001", title: "Look Book 001", client: "Presto", tag: "Lookbook",
     imgs: ["look-book-001"], pos: "50% 30%",
-    url: "https://www.instagram.com/p/DWjFnZbDNfv/", featured: true,
+    url: "https://www.instagram.com/p/DWjFnZbDNfv/",
   },
   {
     slug: "il-giardino", title: "Il giardino", client: "Racconto dal Salento", tag: "Documentario",
     imgs: ["giardino-salento", "hagia-sophia-bosco"], provvisorio: true,
-    url: "https://www.instagram.com/p/Detc54XMlWE/", featured: true,
+    url: "https://www.instagram.com/p/Detc54XMlWE/",
   },
   {
     slug: "il-buio", title: "Il buio", client: "Progetto MKA", tag: "Corto",
     imgs: ["il-buio"], pos: "50% 35%", provvisorio: true,
-    url: "https://www.instagram.com/p/Dd3f7O8MfRI/", featured: true,
+    url: "https://www.instagram.com/p/Dd3f7O8MfRI/",
   },
   {
     slug: "backstage-001", title: "Backstage_001", client: "MKA", tag: "Backstage",

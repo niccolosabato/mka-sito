@@ -14,9 +14,18 @@
 <style>
   /* in alto basta lo spazio per la testata fissa più un po' di respiro */
   .index { padding: max(110px, 12vh) var(--pad) 18vh; }
+  /* torna da dove si è arrivati (home o progetto), se no alla sezione progetti della home */
+  .back {
+    display: inline-flex; align-items: center; gap: 10px; margin-bottom: 36px;
+    padding: 11px 20px; border: 1px solid var(--cream); font-size: var(--fs-3); text-decoration: none;
+    transition: background .3s, color .3s;
+  }
+  .back span { transition: transform .4s var(--ease); }
+  .back:hover { background: var(--cream); color: var(--black); }
+  .back:hover span { transform: translateX(-4px); }
   .rows { list-style: none; margin: 0; padding: 0; border-top: 1px solid rgba(241,237,228,.2); }
   .rows a {
-    display: grid; grid-template-columns: 60px 1.4fr 1fr 1fr 40px; align-items: center; gap: 16px;
+    display: grid; grid-template-columns: calc(var(--fs-2) * 1.5) 1.4fr 1fr 1fr 40px; align-items: baseline; gap: 16px;
     padding: 22px 0; border-bottom: 1px solid rgba(241,237,228,.2); text-decoration: none;
     transition: padding .45s var(--ease), background-color .3s;
   }
@@ -26,22 +35,24 @@
   }
   /* cliente e tipo: sul desktop sono due colonne della griglia, sul telefono una riga sotto il titolo */
   .rows .meta { display: contents; }
-  .rows .t { font-size: clamp(22px, 3vw, 44px); font-weight: 500; letter-spacing: -.03em; line-height: 1.05; }
-  .rows .m { font-family: var(--f-mono); font-stretch: 80%; font-size: 14px; text-transform: uppercase; letter-spacing: .04em; }
+  /* numero grande come il titolo */
+  .rows .t, .rows .n { font-size: var(--fs-2); font-weight: 500; letter-spacing: -.03em; line-height: 1.05; }
+  .rows .m { font-family: var(--f-mono); font-stretch: 80%; font-size: var(--fs-mono); text-transform: uppercase; letter-spacing: .04em; }
   .rows .ar { justify-self: end; }
   .peek {
     position: fixed; left: 0; top: 0; z-index: 40; width: 300px; aspect-ratio: 4 / 3; border-radius: 0; overflow: hidden;
     pointer-events: none; opacity: 0; transform: translate(-50%, -50%) scale(.9); transition: opacity .3s, transform .45s var(--ease);
   }
   .peek.on { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  /* sopra le righe il cursore è l'anteprima stessa */
+  @media (hover: hover) { .rows a { cursor: none; } }
   .peek img { width: 100%; height: 100%; object-fit: cover; }
   @media (max-width: 760px) {
-    .rows a { grid-template-columns: 26px 1fr 16px; gap: 8px 12px; align-items: baseline; padding: 20px 0; }
+    .rows a { grid-template-columns: calc(var(--fs-2) * 1.5) 1fr 16px; gap: 8px 12px; align-items: baseline; padding: 20px 0; }
     .rows .n { grid-column: 1; grid-row: 1; }
-    .rows .t { grid-column: 2; grid-row: 1; font-size: 26px; }
+    .rows .t { grid-column: 2; grid-row: 1; }
     .rows .ar { grid-column: 3; grid-row: 1; }
     .rows .meta { grid-column: 2; grid-row: 2; display: flex; flex-wrap: wrap; gap: 4px 14px; }
-    .rows .meta .m { font-size: 13px; }
     .peek { display: none; }
   }
 </style>
@@ -50,14 +61,13 @@
 <div class="grain" aria-hidden="true"></div>
 <header class="top">
   <a class="brand" href="index.html" aria-label="MKA, torna alla home">
-    <img src="logo/moneta-crema.svg" alt="" width="34" height="34">
-    <span class="brand-txt">MKA<span class="brand-sub">Matrioska Creativa</span></span>
+    <img src="logo/matrioska-creativa-crema.svg" alt="" width="1010" height="346">
   </a>
   <a class="cta-top" href="index.html#call">Prenota una call</a>
 </header>
 
 <main class="index">
-  <p class="label">Archivio</p>
+  <a class="back" id="back" href="index.html#progetti"><span aria-hidden="true">&#8592;</span> Indietro</a>
   <h1 class="sec-title" style="margin-bottom:clamp(40px,7vw,96px)">Tutti i progetti</h1>
   <ul class="rows" id="rows"></ul>
 </main>
@@ -76,10 +86,17 @@
 <script type="module">
   import { PROJECTS } from "./js/data.js";
   import { bindOpen } from "./js/apri.js";
+  // "Indietro": se si arriva da una pagina del sito torna lì (con la posizione di
+  // scroll che il browser ricorda), se no alla sezione progetti della home
+  document.getElementById("back").addEventListener("click", (e) => {
+    let same = false;
+    try { same = !!document.referrer && new URL(document.referrer).origin === location.origin; } catch { /* niente */ }
+    if (same && history.length > 1) { e.preventDefault(); history.back(); }
+  });
   const rows = document.getElementById("rows");
   rows.innerHTML = PROJECTS.map((p, i) => `
     <li><a href="progetto.html?p=${p.slug}" data-img="img/${p.imgs[0]}.jpg" data-pos="${p.pos || "50% 50%"}">
-      <span class="m n">${String(i + 1).padStart(2, "0")}</span>
+      <span class="n">${String(i + 1).padStart(2, "0")}</span>
       <span class="t">${p.title}</span>
       <span class="meta"><span class="m">${p.client}</span><span class="m">${p.tag}</span></span>
       <span class="ar" aria-hidden="true">&#8599;</span>
@@ -91,12 +108,24 @@
     el: peek.classList.contains("on") ? peek : null,
     src: a.dataset.img, pos: a.dataset.pos, radius: "0px",
   }));
-  rows.querySelectorAll("a").forEach((a) => {
-    // anteprima solo con il mouse: al tocco comparirebbe e resterebbe lì
-    a.addEventListener("pointerenter", (e) => { if (e.pointerType !== "mouse") return; pimg.src = a.dataset.img; pimg.style.objectPosition = a.dataset.pos; peek.classList.add("on"); });
-    a.addEventListener("pointerleave", () => peek.classList.remove("on"));
-    a.addEventListener("pointermove", (e) => { peek.style.left = e.clientX + 180 + "px"; peek.style.top = e.clientY + "px"; });
-  });
+  // l'anteprima è il cursore: centrata sul puntatore, la freccia sparisce sopra
+  // le righe. Solo con il mouse (al tocco comparirebbe e resterebbe lì). La riga
+  // sotto il puntatore si cerca anche allo scroll, non solo al movimento: con la
+  // rotellina il browser non manda pointerenter/leave e l'immagine restava vecchia.
+  let mx = -1, my = -1, raf = 0;
+  const check = () => {
+    raf = 0;
+    const a = mx >= 0 ? document.elementFromPoint(mx, my)?.closest("#rows a") : null;
+    if (a) {
+      if (pimg.getAttribute("src") !== a.dataset.img) { pimg.src = a.dataset.img; pimg.style.objectPosition = a.dataset.pos; }
+      peek.style.left = mx + "px"; peek.style.top = my + "px";
+    }
+    peek.classList.toggle("on", !!a);
+  };
+  const ask = () => { if (!raf) raf = requestAnimationFrame(check); };
+  addEventListener("pointermove", (e) => { if (e.pointerType !== "mouse") return; mx = e.clientX; my = e.clientY; ask(); }, { passive: true });
+  addEventListener("scroll", ask, { passive: true });
+  document.documentElement.addEventListener("pointerleave", () => { mx = my = -1; ask(); });
 </script>
 </body>
 </html>

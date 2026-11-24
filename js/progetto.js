@@ -65,7 +65,7 @@ function build(p) {
         <span class="tc" id="tc">00:00:00:00</span>
       </div>
     </div>
-    <div class="pj-names pj-ui${(p.title + p.client).length > 30 ? " long" : ""}">
+    <div class="pj-names pj-ui">
       <h1 class="pj-title">${p.title}</h1>
       <p class="pj-client">${p.client}</p>
     </div>

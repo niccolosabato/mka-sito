@@ -32,7 +32,8 @@ moduli JavaScript non partono aprendo il file direttamente.
    l'animazione non è finita (la fermata parte solo da un gesto in cima, non
    da link e pillola). Tornando in cima l'animazione si riavvolge e tutto
    torna com'era.
-3. **Progetti.** Sei lavori su due colonne e tre righe, con titolo e cliente
+3. **Progetti.** Tre lavori, uno grande a tutta riga e due piccoli sotto (dal
+   24/11/2026, prima erano sei su due colonne), con titolo e cliente
    scritti dentro la miniatura. All'hover l'anteprima
    scorre i fermi immagine del lavoro, si accende un bordo giallo e compare l'etichetta "Guarda". In fondo
    il link a `progetti.html` con l'elenco completo.
